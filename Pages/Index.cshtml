@@ -1,0 +1,391 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@if (!String.IsNullOrEmpty(Model.SelectedArticle.Header))
+{
+    <div>
+        <h3>Article Text</h3><br />
+        <form method="post">
+            <input asp-for="@Model.SelectedArticle.Header" value="@Model.SelectedArticle.Header" /><br />
+            <textarea asp-for="@Model.SelectedArticle.Paragraph" value="@Model.SelectedArticle.Paragraph" id="mytextarea"></textarea><br />
+            <input asp-for="@Model.SelectedArticle.Id" value="@Model.SelectedArticle.Id" hidden />
+            <input asp-for="@Model.SelectedArticle.PageId" value="@Model.SelectedArticle.PageId" hidden />
+            <input asp-for="@Model.SelectedArticle.TimeStamp" value="@Model.SelectedArticle.TimeStamp" hidden />
+            Article Order: <input asp-for="@Model.SelectedArticle.Order" value="@Model.SelectedArticle.Order" /><br />
+            Published: <input asp-for="@Model.SelectedArticle.Published" /><br />
+            <button type="submit" asp-page-handler="EditArticle">Edit</button><br />
+        </form>
+        <hr />
+    </div>
+    <div class="row">
+        <div class="text-center">
+            <h3>Add Image</h3>
+            <form method="post" enctype="multipart/form-data">
+                <input asp-for="@Model.ArticleImageID" value="@Model.SelectedArticle.Id" hidden /><br />
+                <span id="b">
+                    <input type="file" id="file1" name="file1" />
+                </span><br />
+                <span>
+                    <button type="submit" class="btn btn-success" asp-page-handler="PostImage">Ladda upp fil</button>
+                </span>
+            </form>
+        </div>
+        <div>
+            <h3>Add Link</h3>
+            <form method="post">
+                <input asp-for="@Model.createdLink.ArticleId" value="@Model.SelectedArticle.Id" hidden />
+                LinkAddress: <input asp-for="@Model.createdLink.LinkString" /><br />
+                Video/Plugin: <input asp-for="@Model.createdLink.Video" /><br />
+                <button type="submit" asp-page-handler="AddLink">Add Link</button>
+            </form>
+        </div>
+    </div>
+    <div>
+        <br /><hr /><br />
+        <h3>Attached Files and Images</h3>
+        @foreach (var x in Model.Articles)
+        {
+            if (x.Id == Model.SelectedArticle.Id)
+            {
+                <div class="row">
+                    @foreach (var y in Model.imgList)
+                    {
+                        @if (y.ArticleID == x.Id)
+                        {
+                            <div>
+                                <form method="post">
+                                    <input asp-for="DeleteImageID" value="@y.imgID" hidden/>
+                                    <img src="@y.Data" />                                                         
+                                    <div class="text-center"> 
+                                        <button type="submit" asp-page-handler="DeleteImage">Delete</button>
+                                    </div>
+                                    
+                                </form>
+                            </div>
+                        }
+                    }
+                </div>
+                <br />
+                <div class="row">
+                    @foreach (var y in Model.pdfList)
+                    {
+                        @if (y.ArticleID == x.Id)
+                        {
+                            <div>
+                                <form method="post">
+                                    <input asp-for="DeleteImageID" value="@y.ID" hidden />
+                                    <img src="https://clipartart.com/images/document-clipart-icon-5.jpg" width="30" height="30" /><br /> @y.Title<br />
+                                    <button type="submit" asp-page-handler="DeleteImage">Delete</button>
+                                </form>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        }
+    </div>
+    <div class="border">
+        <br /><hr /><br />
+        <h3>Attached Links</h3>
+        <div class="row">
+
+
+            @foreach (var x in Model.Articles)
+            {
+                if (x.Id == Model.SelectedArticle.Id)
+                {
+                    
+                        @foreach (var y in Model.LinkList)
+                        {
+                            <br />
+                            if (y.ArticleId == x.Id)
+                            {
+                                if (y.Video)
+                                {
+                                    <form method="post">
+                                        <input asp-for="DeleteLinkID" value="@y.Id" hidden />
+                                        <iframe width="370" height="210" src="@y.LinkString" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br />
+                                        <button type="submit" asp-page-handler="DeleteLink">Delete Link</button><br /><br />
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form method="post">
+                                        <input asp-for="DeleteLinkID" value="@y.Id" hidden />
+                                        <a href="@y.LinkString">@y.LinkString</a><br />
+                                        <button type="submit" asp-page-handler="DeleteLink">Delete Link</button><br /><br />
+                                    </form>
+                                }
+                            }
+                        }
+                    
+                }
+            }
+        </div>
+    </div>
+    <hr />
+}
+else
+{
+    @if (Model.isAdmin)
+    {
+        <div class="text-center border">
+            <div>Create Page</div>
+            <div>
+                <form method="post">
+                    <input type="text" asp-for="@Model.newCreatedPage.Title" placeholder="new page name" />
+                    <button type="submit" asp-page-handler="NewPage">create new page</button>
+                </form>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            @if (Model.CurrentPage != null)
+            {
+                <div class="border">
+                    <h3>Alter Page Info</h3>
+                    <form method="post">
+                        <input type="hidden" asp-for="@Model.CurrentPage.Id" value="@Model.CurrentPage.Id" />
+                        Page name: <input asp-for="@Model.CurrentPage.Title" value="@Model.CurrentPage.Title" /><br />
+                        Header Location: <input asp-for="CurrentPage.Header" /> <br>
+                        Right Bar: <input asp-for="CurrentPage.Right" /> <br>
+                        Footer: <input asp-for="@Model.CurrentPage.Footer" /> <br />
+                        PageOrder: <input asp-for="@Model.CurrentPage.Order" value="@Model.CurrentPage.Order" /><br />
+                        <input type="hidden" asp-for="@Model.CurrentPage.TimeStamp" value="@Model.CurrentPage.TimeStamp" />
+                        Footer Text: <input asp-for="@Model.CurrentPage.FooterString" value="@Model.CurrentPage.FooterString" /><br />
+                        BG color: <input asp-for="@Model.CurrentPage.BgColor" value="@Model.CurrentPage.BgColor" /><br />
+                        <button type="submit" asp-page-handler="EditPage">Edit Page Info</button>
+                    </form>
+                </div>
+                <hr />
+                <div class="border">
+                    <h3>Delete Page</h3>
+                    <form method="post">
+                        <input type="text" asp-for="@Model.PageDeleteID" value="@Model.SelectedPage" hidden />
+                        <button type="submit" asp-page-handler="DeletePage">Delete Page</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+    @if (Model.isSkribent || Model.isAdmin)
+    {
+        <hr />
+        <div class="text-center">Create Article</div>
+        <div class="text-center">
+            <form method="post">
+                <input type="text" asp-for="@Model.NewArticle.PageId" value="@Model.CurrentPage.Id" hidden />
+                <input type="text" asp-for="@Model.NewArticle.Header" placeholder="header" /><br />
+                <input type="text" asp-for="@Model.NewArticle.Paragraph" placeholder="paragraph" /><br />
+                <button type="submit" asp-page-handler="NewArticle">Create Article</button><br />
+            </form>
+            <hr />
+        </div>
+        <br />
+        <hr />
+    }
+
+    @if (Model.CurrentPage != null)
+    {
+        @if (Model.CurrentPage.Header)
+        {
+            <span class="row bg-light">
+                @foreach (var x in Model.cPages)
+                {
+                    <a href="?SelectedPage=@x.Title"> @x.Title </a>
+                }
+                <partial name="_LoginPartial" />
+                <span id="counter"></span>
+                <!-- hitwebcounter Code START -->
+                <a href="https://www.hitwebcounter.com" target="_blank">
+                    <img src="https://hitwebcounter.com/counter/counter.php?page=7818844&style=0003&nbdigits=5&type=page&initCount=0" title="Free Counter" Alt="web counter" border="0" />
+                </a>
+
+            </span>
+        }
+
+    }
+
+
+    <div class="row">
+        @if (Model.CurrentPage != null)
+        {
+            @if (!Model.CurrentPage.Header)
+            {
+                <div class="col-3 badge-secondary">
+                    <ul>
+                        @foreach (var x in Model.cPages)
+                        {
+                            <li><a href="?SelectedPage=@x.Title">@x.Title </a></li>
+                        }
+                        <li><partial name="_LoginPartial" /></li>
+                        <li id="counter"></li>
+                        <li>
+                            <!-- hitwebcounter Code START -->
+                            <a href="https://www.hitwebcounter.com" target="_blank">
+                                <img src="https://hitwebcounter.com/counter/counter.php?page=7818844&style=0003&nbdigits=5&type=page&initCount=0" title="Free Counter" Alt="web counter" border="0" />
+                            </a>
+                        </li>
+                        <li>
+                            <!-- hitwebcounter Code START -->
+                            <a href="https://www.hitwebcounter.com" target="_blank">
+                                <img src="https://hitwebcounter.com/counter/counter.php?page=7818845&style=0006&nbdigits=5&type=ip&initCount=0" title="Free Counter" Alt="web counter" border="0" />
+                            </a>
+
+                        </li>
+                    </ul>
+                </div>
+            }
+        }
+
+
+    <div class="bg-primary col-lg">
+        <br />
+        <br />
+        @if (Model.CurrentPage != null)
+        {
+            <h1>@Model.CurrentPage.Title</h1><br />
+        }
+
+        @foreach (var x in Model.Articles)
+        {
+            @if (Model.isSkribent || Model.isAdmin || x.Published)
+            {
+                <div class="border">
+                    <h3>@x.Header</h3>
+                    @Html.Raw(x.Paragraph)
+                </div>
+
+                <br />
+                <div id="carouselExampleSlidesOnly" class="carousel slide" data-interval="1500" data-ride="carousel">
+                    <div class="carousel-inner w-25">
+
+                        @foreach (var y in Model.imgList)
+                        {
+                            @if (y.ArticleID == x.Id)
+                            {
+                                @if (y.First)
+                                {
+                                    <div class="carousel-item active w-20">
+                                        <img src="@y.Data" class="w-50" alt="...">
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="carousel-item ">
+                                        <img src="@y.Data" class="w-50" alt="...">
+                                    </div>
+                                }
+                            }
+                        }
+
+                    </div>
+                </div>
+                <br />
+                <div>
+                    @foreach (var y in Model.LinkList)
+                    {
+                        @if (y.ArticleId == x.Id)
+                        {
+                            @if (y.Video)
+                            {
+                                <iframe width="370" height="210" src="@y.LinkString" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br />
+                            }
+                            else
+                            {
+                                <a href="@y.LinkString">@y.LinkString</a><br />
+                            }
+                        }
+                    }
+                </div>
+                <br />
+                <div>
+                    @if (Model.pdfList != null)
+                    {
+                        <h6>Bifogade dokument</h6>
+                        @foreach (var y in Model.pdfList)
+                        {
+                            @if (y.ArticleID == x.Id)
+                            {
+                                <form method="post">
+                                    <input asp-for="@Model.pdfID" value="@y.ID" hidden />
+                                    @y.Title <button asp-page-handler="DownloadDoc" type="submit">Ladda ned dokument</button>
+                                </form>
+                            }
+
+                        }
+                    }
+
+                </div>
+                @if (Model.isSkribent || Model.isAdmin)
+                {
+                    <br />
+                    <div>
+                        <a href="?ArticleID=@x.Id">select article</a>
+                    </div>
+                    <br />
+                }
+            }
+        }
+        <!--Höger Kolumn-->
+    </div>
+        @if (Model.CurrentPage != null)
+        {
+            @if (Model.CurrentPage.Right)
+            {
+                <div class="col-3 bg-success">
+                    aaaa
+                </div>
+            }
+        }
+    </div>
+    <!--Footer-->
+    @if (Model.CurrentPage != null)
+    {
+        @if (Model.CurrentPage.Footer)
+        {
+            <div class="row bg-warning">
+                @Model.CurrentPage.FooterString 
+            </div>
+        }
+    }
+
+}
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script src=""></script>
+<script>
+    tinymce.init({
+        selector: '#mytextarea',
+        width: 600,
+        height: 300,
+        plugins: [
+            'advlist autolink link image lists charmap print preview hr anchor pagebreak',
+            'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+            'table emoticons template paste help'
+        ],
+        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent | link image | print preview media fullpage | ' +
+            'forecolor backcolor emoticons | help',
+        menu: {
+            favs: { title: 'My Favorites', items: 'code visualaid | searchreplace | emoticons' }
+        },
+        menubar: 'favs file edit view insert format tools table help',
+        content_css: 'css/content.css'
+    });
+</script>
+<script>
+    updateCounter();
+    function updateCounter() {
+        let counter = document.getElementById("counter");
+        fetch('https://api.countapi.xyz/update/maxsite/maxchannel/?amount=1')
+            .then(res => res.json())
+            .then(data => counter.innerHTML = data.value)
+    }
+</script>

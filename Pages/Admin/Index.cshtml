@@ -1,0 +1,96 @@
+﻿@page
+@model WebbkursProv.Pages.Admin.IndexModel
+@{
+}
+<h1>
+    Adminsidan - Du är
+    @foreach (var role in Model.Roles)
+    {
+        <span>@(await Model._userManager.IsInRoleAsync(Model.CurrentUser, role.Name) ? role.Name + ", " : "")</span>
+    }
+
+
+</h1>
+
+@if (Model.isAdmin)
+{
+    <p>Det här får bara adminstratören se</p>
+}
+@if (Model.isNy)
+{
+    <p>Det här får bara användarna se</p>
+}
+
+
+@*<div>
+        Befintliga roller: <br />
+        @foreach (var role in Model.Roles)
+        {
+            <p>@role.Name</p>
+        }
+
+    </div>*@
+<div>
+    Befintliga användare: <br />
+
+    <table>
+
+        <tr>
+            <th>Användarnamn</th>
+            @foreach (var role in Model.Roles)
+            {
+                <th>@role.Name</th>
+            }
+        </tr>
+
+
+        @foreach (var user in Model.Users)
+        {
+    <tr>
+        <td>@user.UserName</td>
+
+        @foreach (var role in Model.Roles)
+        {
+            @if (Model.isAdmin || Model.isNy || Model.isSkribent)
+            {
+                if (await Model._userManager.IsInRoleAsync(user, role.Name))
+                {
+                    <td><a href="?RemoveUserId=@user.Id&Role=@role.Name" class="bg-success text-white">@role.Name</a></td>
+
+                }
+                else
+                {
+                    <td><a href="?AddUserId=@user.Id&Role=@role.Name" class="bg-danger text-white">@role.Name</a></td>
+                }
+            }
+
+
+        }
+
+    </tr>
+        }
+    </table>
+
+</div>
+
+
+<form method="post">
+    <label for="RoleName">Ny roll</label>
+    <input name="RoleName" />
+    <input type="submit" value="Spara Roll" />
+</form>
+
+@if (Model.isAdmin)
+{
+    <div>Admin</div>
+}
+else if (Model.isSkribent)
+{
+    <div>Skribent</div>
+} 
+else if (Model.isNy)
+{
+    <div>Ny</div>
+}
+
+
