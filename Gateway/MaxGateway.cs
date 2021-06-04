@@ -32,6 +32,12 @@ namespace WebbkursProv.Gateway
 
         public async Task<CreatedPage> PostCreatedPage(CreatedPage createdPage)
         {
+            createdPage.BgColor = "#ffffff";
+            //createdPage.ColorFooter = "#ffffff";
+            //createdPage.ColorHeader = "#ffffff";
+            //createdPage.ColorLeftbar = "#ffffff";
+            //createdPage.ColorRightbar = "#ffffff";
+
             var response = await _httpClient.PostAsJsonAsync(_configuration["WPPage"], createdPage);
             CreatedPage returnValue = await response.Content.ReadFromJsonAsync<CreatedPage>();
 
@@ -61,6 +67,8 @@ namespace WebbkursProv.Gateway
 
         public async Task<Article> PostArticle(Article createdArticle)
         {
+            createdArticle.BgColor = "#ffffff";
+            createdArticle.ImgWidth = "25";
             var response = await _httpClient.PostAsJsonAsync(_configuration["WPArticle"], createdArticle);
             Article returnValue = await response.Content.ReadFromJsonAsync<Article>();
 
@@ -164,6 +172,35 @@ namespace WebbkursProv.Gateway
         public async Task EditLink(long editId, Link link)
         {
             var response = await _httpClient.PutAsJsonAsync(_configuration["WPLink"] + "/" + editId, link);
+        }
+
+        // Other Article
+
+        public async Task<List<OtherArticle>> GetOtherArticles()
+        {
+            var response = await _httpClient.GetAsync(_configuration["WPOtherArticle"]);
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<OtherArticle>>(apiResponse);
+        }
+
+        public async Task<OtherArticle> PostOtherArticle(OtherArticle otherarticle)
+        {
+            var response = await _httpClient.PostAsJsonAsync(_configuration["WPOtherArticle"], otherarticle);
+            OtherArticle returnValue = await response.Content.ReadFromJsonAsync<OtherArticle>();
+
+            return returnValue;
+        }
+        public async Task<OtherArticle> DeleteOtherArticle(long deleteId)
+        {
+            var response = await _httpClient.DeleteAsync(_configuration["WPOtherArticle"] + "/" + deleteId);
+            OtherArticle returnValue = await response.Content.ReadFromJsonAsync<OtherArticle>();
+
+            return returnValue;
+        }
+
+        public async Task EditOtherArticle(long editId, OtherArticle otherarticle)
+        {
+            var response = await _httpClient.PutAsJsonAsync(_configuration["WPOtherArticle"] + "/" + editId, otherarticle);
         }
     }
 }

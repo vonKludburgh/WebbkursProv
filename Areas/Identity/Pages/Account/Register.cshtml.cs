@@ -24,17 +24,20 @@ namespace WebbkursProv.Areas.Identity.Pages.Account
         private readonly UserManager<WebbkursProvUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
             UserManager<WebbkursProvUser> userManager,
             SignInManager<WebbkursProvUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -88,6 +91,15 @@ namespace WebbkursProv.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+                    //if (_roleManager == null)
+                    //{
+                    //    var role = new IdentityRole
+                    //    {
+                    //        Name = "Ny"
+                    //    };
+                    //    await _roleManager.CreateAsync(role);
+                    //}
+
                     var roleresult = await _userManager.AddToRoleAsync(user, "Ny");
 
                     _logger.LogInformation("User created a new account with password.");

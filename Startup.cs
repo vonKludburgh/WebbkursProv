@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static WebbkursProv.Pages.IndexModel;
 
 namespace WebbkursProv
 {
@@ -42,11 +46,26 @@ namespace WebbkursProv
                 options.Conventions.AllowAnonymousToPage("/Admin/Info");
                 options.Conventions.AllowAnonymousToFolder("/Admin/PublicAdmin");
             });
+
+            services.Configure<CookiePolicyOptions>(options => {
+                options.CheckConsentNeeded = ContextBoundObject => true;
+                options.MinimumSameSitePolicy = SameSiteMode.Strict;
+            });
+
+            services.AddMvc()
+            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+            .AddRazorPagesOptions(options =>
+            {
+                options.Conventions.Add(
+                    new PageRouteTransformerConvention(
+                        new SlugifyParameterTransformer()));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -65,7 +84,7 @@ namespace WebbkursProv
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseCookiePolicy();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

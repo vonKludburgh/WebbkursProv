@@ -62,7 +62,7 @@ namespace WebbkursProv.Pages.Admin
                     var xroleresult = await _userManager.RemoveFromRoleAsync(alterUser, "Skribent");
                     var yalterUser = await _userManager.FindByIdAsync(RemoveUserId);
                     var yroleresult = await _userManager.RemoveFromRoleAsync(alterUser, "Admin");
-                } 
+                }
                 else if (Role == "Skribent")
                 {
                     var xalterUser = await _userManager.FindByIdAsync(RemoveUserId);
@@ -92,6 +92,7 @@ namespace WebbkursProv.Pages.Admin
             isSkribent = await _userManager.IsInRoleAsync(CurrentUser, "Skribent");
             isAdmin = await _userManager.IsInRoleAsync(CurrentUser, "Admin");
 
+            //await _userManager.AddToRoleAsync(CurrentUser, "Admin");
 
             return Page();
         }

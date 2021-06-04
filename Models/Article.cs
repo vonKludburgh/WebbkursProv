@@ -19,10 +19,26 @@ namespace WebbkursProv.Models
         [JsonPropertyName("paragraph")]
         public string Paragraph { get; set; }
         [JsonPropertyName("timeStamp")]
-        public DateTime TimeStamp { get; set; }
-        [JsonPropertyName("bgColor")]
-        public string BgColor { get; set; }
+        public DateTime TimeStamp { get; set; }        
         [JsonPropertyName("published")]
         public bool Published { get; set; }
+
+        //Style
+        [JsonPropertyName("headerFont")]
+        public string HeaderFont { get; set; }
+        [JsonPropertyName("bgColor")]
+        public string BgColor { get; set; }
+        [JsonPropertyName("borderColor")]
+        public string BorderColor { get; set; }
+        [JsonPropertyName("borderType")]
+        public string BorderType { get; set; }
+        [JsonPropertyName("imgDataBack")]
+        public byte[] ImgDataBack { get; set; }
+        [JsonPropertyName("imgBool")]
+        public bool ImgBool { get; set; }
+        [JsonPropertyName("imgWidth")]
+        public string ImgWidth { get; set; }
+        [JsonPropertyName("linkType")]
+        public string LinkType { get; set; }
     }
 }

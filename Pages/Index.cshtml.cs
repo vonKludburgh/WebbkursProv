@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WebbkursProv.Areas.Identity.Data;
 using WebbkursProv.Gateway;
@@ -16,6 +20,9 @@ namespace WebbkursProv.Pages
     public class IndexModel : PageModel
     {
         private readonly IMaxGateway _gateway;
+
+        [BindProperty(SupportsGet =true)]
+        public string CookieValue { get; set; }
 
         #region User
         [BindProperty(SupportsGet = true)]
@@ -91,6 +98,9 @@ namespace WebbkursProv.Pages
         [BindProperty (SupportsGet =true)]
         public Article SelectedArticle { get; set; }
 
+        [BindProperty(SupportsGet =true)]
+        public string backimg { get; set; }
+
         #endregion Article
 
         #region Images
@@ -126,7 +136,22 @@ namespace WebbkursProv.Pages
         [BindProperty]
         public long DeleteLinkID { get; set; }
 
+        public HttpClient client = new HttpClient();
+
+        [BindProperty(SupportsGet =true)]
+        public List<apiClass> apiClassList { get; set; }
+
         #endregion Links
+
+        #region OtherArticle
+
+        [BindProperty]
+        public OtherArticle newOtherArticle { get; set; }
+
+        [BindProperty(SupportsGet =true)]
+        public List<OtherArticle> OtherArticleList { get; set; }
+
+        #endregion OtherArticle
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -144,14 +169,36 @@ namespace WebbkursProv.Pages
                 isAdmin = await _userManager.IsInRoleAsync(CurrentUser, "Admin");
             }
 
+            if (isSkribent)
+            {
+                CookieOptions op = new CookieOptions();
+                op.Expires = new DateTime(2022, 02, 02);
+                op.MaxAge = TimeSpan.FromDays(365);
+                Response.Cookies.Append("xxx", "Skribenten", op);
+            }
+
+            if (isAdmin)
+            {
+                CookieOptions op = new CookieOptions();
+                op.Expires = new DateTime(2022, 02, 02);
+                op.MaxAge = TimeSpan.FromDays(365);
+                Response.Cookies.Append("xxx", "Big Boss", op);
+            }
+
+            CookieValue = Request.Cookies.TryGetValue("xxx", out string cvalue ) ? cvalue : null;
+
             // Page
 
             cPages = await _gateway.GetCreatedPages();
+            cPages = cPages.OrderBy(x => x.Order).ToList();
 
             if (String.IsNullOrEmpty(SelectedPage))
             {
-                CurrentPage = cPages.First();
-                SelectedPage = CurrentPage.Title;
+                if (cPages != null)
+                {
+                    CurrentPage = cPages.First();
+                    SelectedPage = CurrentPage.Title;
+                }                
             }
             else
             {
@@ -175,6 +222,7 @@ namespace WebbkursProv.Pages
             {
                 SelectedArticle = myart.FirstOrDefault(x => x.Id == ArticleID);
             }
+
 
             // Image
 
@@ -223,6 +271,52 @@ namespace WebbkursProv.Pages
             // Link
 
             LinkList = await _gateway.GetLinks();
+            List<Link> apiList = new List<Link>();
+
+            foreach (var x in LinkList)
+            {
+                if (x.LinkString.Contains("api") || x.LinkString.Contains("json"))
+                {
+                    apiList.Add(x);
+                }
+            }
+
+            if (apiList != null)
+            {
+                foreach (var x in apiList)
+                {
+                    Task<string> apiTask = client.GetStringAsync(x.LinkString);
+                    string apiString = await apiTask;
+                    string[] stringArray = apiString.Split(',');
+                    apiClass aclass = new apiClass();
+                    aclass.ArticleID = x.ArticleId;
+
+                    for (int i = 0; i < stringArray.Length; i++)
+                    {
+                        if (!stringArray[i].Contains("null"))
+                        {
+                            if (stringArray[i].Contains(".png") || stringArray[i].Contains(".jpg"))
+                            {
+                                string aString = "";
+                                string[] aStringArray = new string[3];
+                                aString = stringArray[i];
+                                aStringArray = aString.Split('"');
+                                aclass.imgString = aStringArray[3];
+                            }
+                            else
+                            {
+                                string ddd = stringArray[i];
+                                aclass.ApiStringList.Add(ddd);
+                            }
+                        }                        
+                    }
+                    apiClassList.Add(aclass);
+                }
+            }
+
+            // Other Article
+
+            OtherArticleList = await _gateway.GetOtherArticles();
 
             return Page();
         }
@@ -244,6 +338,8 @@ namespace WebbkursProv.Pages
 
         public async Task<IActionResult> OnPostEditPageAsync()
         {
+            
+
             await _gateway.EditCreatedPage(CurrentPage.Id,CurrentPage);
             return RedirectToPage("./Index");
         }
@@ -254,6 +350,21 @@ namespace WebbkursProv.Pages
             CreatedPage deletePage = cPages.Find(x => x.Title == PageDeleteID);
             long deleteId = deletePage.Id;
             await _gateway.DeleteCreatedPage(deleteId);
+            return RedirectToPage("./Index");
+        }
+
+        public async Task<IActionResult> OnPostUploadHeaderImgAsync()
+        {
+            var files = Request.Form.Files;
+            var file = files[0];
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                CurrentPage.ImgDataHeader = ms.ToArray();
+            }
+
+            await _gateway.EditCreatedPage(CurrentPage.Id, CurrentPage);
             return RedirectToPage("./Index");
         }
 
@@ -279,6 +390,18 @@ namespace WebbkursProv.Pages
 
         public async Task<IActionResult> OnPostEditArticleAsync()
         {
+            //var files = Request.Form.Files;
+            //if (files != null)
+            //{
+            //    var file = files[0];
+
+            //    using (MemoryStream ms = new MemoryStream())
+            //    {
+            //        file.CopyTo(ms);
+            //        SelectedArticle.ImgDataBack = ms.ToArray();
+            //    }
+            //}
+
             await _gateway.EditArticle(SelectedArticle.Id, SelectedArticle);
             return RedirectToPage("./Index");
         }
@@ -359,6 +482,29 @@ namespace WebbkursProv.Pages
         }
 
         #endregion Links
+
+        #region OtherArticle
+
+        public async Task<IActionResult> OnPostNewOtherArticleAsync()
+        {
+            if (!String.IsNullOrEmpty(newOtherArticle.Link) && !String.IsNullOrEmpty(newOtherArticle.ImgLink))
+            {
+                await _gateway.PostOtherArticle(newOtherArticle);
+            }
+
+            return RedirectToPage("./Index");
+        }
+
+        #endregion OtherArticle
+
+        public class SlugifyParameterTransformer : IOutboundParameterTransformer
+        {
+            public string TransformOutbound(object value)
+            {
+                if (value == null) { return null; }
+                return Regex.Replace(value.ToString(), "([a-z])([A-Z])", "$1-$2").ToLower();
+            }
+        }
     }
 
     public class imageClass
@@ -375,5 +521,12 @@ namespace WebbkursProv.Pages
         public string Title { get; set; }
         public string Byte { get; set; }
         public long ArticleID { get; set; }
+    }
+
+    public class apiClass
+    {
+        public long ArticleID { get; set; }
+        public List<string> ApiStringList = new List<string>();
+        public string imgString { get; set; }
     }
 }

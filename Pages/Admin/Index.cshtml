@@ -53,7 +53,7 @@
         {
             @if (Model.isAdmin || Model.isNy || Model.isSkribent)
             {
-                if (await Model._userManager.IsInRoleAsync(user, role.Name))
+                @*if (await Model._userManager.IsInRoleAsync(user, role.Name))
                 {
                     <td><a href="?RemoveUserId=@user.Id&Role=@role.Name" class="bg-success text-white">@role.Name</a></td>
 
@@ -61,7 +61,7 @@
                 else
                 {
                     <td><a href="?AddUserId=@user.Id&Role=@role.Name" class="bg-danger text-white">@role.Name</a></td>
-                }
+                }*@
             }
 
 

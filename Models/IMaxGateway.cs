@@ -40,5 +40,12 @@ namespace WebbkursProv.Models
         Task<Link> PostLink(Link document);
         Task EditLink(long editId, Link document);
         Task<Link> DeleteLink(long deleteId);
+
+        // Other Articles
+
+        Task<List<OtherArticle>> GetOtherArticles();
+        Task<OtherArticle> PostOtherArticle(OtherArticle otherArticle);
+        Task EditOtherArticle(long editId, OtherArticle otherArticle);
+        Task<OtherArticle> DeleteOtherArticle(long deleteId);
     }
 }
