@@ -82,6 +82,14 @@ namespace WebbkursProv.Pages
         [BindProperty(SupportsGet =true)]
         public string PageDeleteID { get; set; }
 
+        [BindProperty(SupportsGet =true)]
+        public List<imageClass> PageImages { get; set; }
+
+        [BindProperty(SupportsGet =true)]
+        public IFormFile UploadHeader { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string asd { get; set; }
+
         #endregion Pages
 
         #region Article
@@ -151,6 +159,12 @@ namespace WebbkursProv.Pages
         [BindProperty(SupportsGet =true)]
         public List<OtherArticle> OtherArticleList { get; set; }
 
+        [BindProperty(SupportsGet =true)]
+        public List<imageClass> oaImageClassList { get; set; }
+
+        [BindProperty]
+        public long OaDeleteID { get; set; }
+
         #endregion OtherArticle
 
         public async Task<IActionResult> OnGetAsync()
@@ -192,9 +206,18 @@ namespace WebbkursProv.Pages
             cPages = await _gateway.GetCreatedPages();
             cPages = cPages.OrderBy(x => x.Order).ToList();
 
+            if (cPages.Count < 1)
+            {
+                CreatedPage newpage = new CreatedPage();
+                newpage.Title = "Home";
+                newpage.TimeStamp = DateTime.Now;
+
+                await _gateway.PostCreatedPage(newpage);
+            }
+
             if (String.IsNullOrEmpty(SelectedPage))
             {
-                if (cPages != null)
+                if (cPages.Count > 0)
                 {
                     CurrentPage = cPages.First();
                     SelectedPage = CurrentPage.Title;
@@ -211,6 +234,8 @@ namespace WebbkursProv.Pages
                     }
                 }
             }
+
+            
 
             // Article
 
@@ -230,7 +255,18 @@ namespace WebbkursProv.Pages
 
             foreach (var x in Images)
             {
-                if (x.Title.Contains(".pdf"))
+                if (x.Title.Contains(".jpg")|| x.Title.Contains(".png"))
+                { 
+                    string imageBase64Data = Convert.ToBase64String(x.ImageData);
+                    string ImageUrl = string.Format($"data:image/jpg;base64, {imageBase64Data}");
+                    string imageName = imageBase64Data;
+                    imageClass aaa = new imageClass();
+                    aaa.Data = ImageUrl;
+                    aaa.ArticleID = x.ArticleId;
+                    aaa.imgID = x.Id;
+                    imgList.Add(aaa);
+                }
+                else
                 {
                     string imageBase64Data = Convert.ToBase64String(x.ImageData);
                     string ImageUrl = string.Format($"data:image/jpg;base64, {imageBase64Data}");
@@ -241,17 +277,6 @@ namespace WebbkursProv.Pages
                     aaa.ArticleID = x.ArticleId;
                     aaa.ID = x.Id;
                     pdfList.Add(aaa);
-                }
-                else
-                {
-                    string imageBase64Data = Convert.ToBase64String(x.ImageData);
-                    string ImageUrl = string.Format($"data:image/jpg;base64, {imageBase64Data}");
-                    string imageName = imageBase64Data;
-                    imageClass aaa = new imageClass();
-                    aaa.Data = ImageUrl;
-                    aaa.ArticleID = x.ArticleId;
-                    aaa.imgID = x.Id;
-                    imgList.Add(aaa);
                 }
                 
             }
@@ -270,14 +295,19 @@ namespace WebbkursProv.Pages
 
             // Link
 
-            LinkList = await _gateway.GetLinks();
+            List<Link> LList = await _gateway.GetLinks();
+            //LinkList = await _gateway.GetLinks();
             List<Link> apiList = new List<Link>();
 
-            foreach (var x in LinkList)
+            foreach (var x in LList)
             {
                 if (x.LinkString.Contains("api") || x.LinkString.Contains("json"))
                 {
                     apiList.Add(x);
+                }
+                else
+                {
+                    LinkList.Add(x);
                 }
             }
 
@@ -317,6 +347,21 @@ namespace WebbkursProv.Pages
             // Other Article
 
             OtherArticleList = await _gateway.GetOtherArticles();
+            OtherArticleList = OtherArticleList.Where(x => CurrentPage.Id == x.PageId).ToList();
+
+            foreach (var x in myart)
+            {
+                if (x.ImgDataBack != null)
+                {
+                    string imageBase64Data = Convert.ToBase64String(x.ImgDataBack);
+                    string ImageUrl = string.Format($"data:image/jpg;base64, {imageBase64Data}");
+                    string imageName = imageBase64Data;
+                    imageClass aaa = new imageClass();
+                    aaa.Data = ImageUrl;
+                    aaa.ArticleID = x.Id;
+                    oaImageClassList.Add(aaa);
+                }
+            }
 
             return Page();
         }
@@ -338,7 +383,16 @@ namespace WebbkursProv.Pages
 
         public async Task<IActionResult> OnPostEditPageAsync()
         {
-            
+            if (HttpContext.Request.Form.Files.Count > 0)
+            {
+                var file = Request.Form.Files[0];
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    file.CopyTo(ms);
+                    CurrentPage.ImgDataHeader = ms.ToArray();
+                }
+            }
 
             await _gateway.EditCreatedPage(CurrentPage.Id,CurrentPage);
             return RedirectToPage("./Index");
@@ -353,15 +407,19 @@ namespace WebbkursProv.Pages
             return RedirectToPage("./Index");
         }
 
-        public async Task<IActionResult> OnPostUploadHeaderImgAsync()
+        public async Task<IActionResult> OnPostUploadHeaderImgAsync(IFormFile f1, IFormFile f2, IFormFile f3, IFormFile f4)
         {
-            var files = Request.Form.Files;
-            var file = files[0];
 
             using (MemoryStream ms = new MemoryStream())
             {
-                file.CopyTo(ms);
+                f1.CopyTo(ms);
                 CurrentPage.ImgDataHeader = ms.ToArray();
+                f2.CopyTo(ms);
+                CurrentPage.ImgDataLeftbar = ms.ToArray();
+                f3.CopyTo(ms);
+                CurrentPage.ImgData = ms.ToArray();
+                f4.CopyTo(ms);
+                CurrentPage.ImgDataRightbar = ms.ToArray();
             }
 
             await _gateway.EditCreatedPage(CurrentPage.Id, CurrentPage);
@@ -390,17 +448,27 @@ namespace WebbkursProv.Pages
 
         public async Task<IActionResult> OnPostEditArticleAsync()
         {
-            //var files = Request.Form.Files;
-            //if (files != null)
-            //{
-            //    var file = files[0];
-
-            //    using (MemoryStream ms = new MemoryStream())
-            //    {
-            //        file.CopyTo(ms);
-            //        SelectedArticle.ImgDataBack = ms.ToArray();
-            //    }
-            //}
+            
+            if (HttpContext.Request.Form.Files.Count > 0)
+            {
+                var file = Request.Form.Files[0];
+                
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    file.CopyTo(ms);
+                    SelectedArticle.ImgDataBack = ms.ToArray();
+                }
+            }
+            else
+            {
+                foreach (var x in oaImageClassList)
+                {
+                    if (x.ArticleID == SelectedArticle.Id)
+                    {
+                        
+                    }
+                }
+            }
 
             await _gateway.EditArticle(SelectedArticle.Id, SelectedArticle);
             return RedirectToPage("./Index");
@@ -452,12 +520,16 @@ namespace WebbkursProv.Pages
             }
             else
             {
-                byte[] byteArr = doc.ImageData;
-                string mimeType = "application/pdf";
-                return new FileContentResult(byteArr, mimeType)
-                {
-                    FileDownloadName = $"Invoice {doc.ImageData}.pdf"
-                };
+                byte[] fileBytes = doc.ImageData;
+                string fileName = doc.Title;
+                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+
+                //byte[] byteArr = doc.ImageData;
+                //string mimeType = "application/pdf";
+                //return new FileContentResult(byteArr, mimeType)
+                //{
+                //    FileDownloadName = $"Invoice {doc.ImageData}.pdf"
+                //};
             }
         }
 
@@ -495,6 +567,13 @@ namespace WebbkursProv.Pages
             return RedirectToPage("./Index");
         }
 
+        public async Task<IActionResult> OnPostDeleteOAAsync()
+        {
+            await _gateway.DeleteOtherArticle(OaDeleteID);
+
+            return RedirectToPage("./Index");
+        }
+
         #endregion OtherArticle
 
         public class SlugifyParameterTransformer : IOutboundParameterTransformer
@@ -505,6 +584,7 @@ namespace WebbkursProv.Pages
                 return Regex.Replace(value.ToString(), "([a-z])([A-Z])", "$1-$2").ToLower();
             }
         }
+
     }
 
     public class imageClass
@@ -513,6 +593,7 @@ namespace WebbkursProv.Pages
         public long ArticleID { get; set; }
         public bool First { get; set; }
         public long imgID { get; set; }
+        public long OAId { get; set; }
     }
 
     public class pdfDoc

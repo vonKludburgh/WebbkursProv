@@ -16,5 +16,9 @@ namespace WebbkursProv.Models
         public byte[] ImageData { get; set; }
         [JsonPropertyName("title")]
         public string Title { get; set; }
+        //[JsonPropertyName("pageId")]
+        //public long PageId { get; set; }
+        //[JsonPropertyName("location")]
+        //public string Location { get; set; }
     }
 }

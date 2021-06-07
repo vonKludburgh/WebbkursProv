@@ -51,7 +51,8 @@
                                      </div>
                                      <div>
                                          Background image:
-                                         <input type="file" id="file1" name="file1" >
+                                         
+                                         <input type="file" id="file1" name="file1" asp-for="@Model.SelectedArticle.ImgDataBack" value="SelectedArticle.ImgDataBack">
                                      </div>
                                      <div>
                                          <select asp-for="@Model.SelectedArticle.LinkType" value="@Model.SelectedArticle.LinkType">
@@ -142,6 +143,7 @@
                             }
                         }
                     </div>
+                    
                 }
             }
         </div>
@@ -287,6 +289,9 @@
                                 </select>
                             </div>
                             <div>
+                                Upload HeaderImage: <input asp-for="@Model.UploadHeader" />
+                            </div>
+                            <div>
                                 Image/Color<input asp-for="CurrentPage.ImgBoolHeader" />
                             </div>
                             <br />
@@ -314,7 +319,7 @@
                                 </select>
                             </div>
                             <div>
-                                Upload LeftImage: <input type="file" asp-for="@Model.CurrentPage.ImgDataLeftbar" value="@Model.CurrentPage.ImgDataLeftbar" />
+                                @*Upload LeftImage: <input type="file" asp-for="@Model.CurrentPage.ImgDataLeftbar" value="@Model.CurrentPage.ImgDataLeftbar" />*@
                             </div>
                             <div>
                                 Image/Color<input asp-for="CurrentPage.ImgBoolLeftbar" />
@@ -335,7 +340,7 @@
                                 </select>
                             </div>
                             <div>
-                                Upload MainImage: <input type="file" asp-for="@Model.CurrentPage.ImgData" value="@Model.CurrentPage.ImgData" />
+                                @*Upload MainImage: <input type="file" asp-for="@Model.CurrentPage.ImgData" value="@Model.CurrentPage.ImgData" />*@
                             </div>
                             <div>
                                 Image/Color<input asp-for="CurrentPage.ImgBool" />
@@ -356,7 +361,7 @@
                                 </select>
                             </div>
                             <div>
-                                Upload RightImage: <input type="file" asp-for="@Model.CurrentPage.ImgDataRightbar" value="@Model.CurrentPage.ImgDataRightbar" />
+                                @*Upload RightImage: <input type="file" asp-for="@Model.CurrentPage.ImgDataRightbar" value="@Model.CurrentPage.ImgDataRightbar" />*@
                             </div>
                             <div>
                                 Image/Color<input asp-for="CurrentPage.ImgBoolRightbar" />
@@ -368,30 +373,31 @@
                                     <option value="">Font</option>
                                     <option value="Tahoma">Tahoma</option>
                                     <option value="Comic Sans MS">Comic Sans MS</option>
-                                </select>
-                                <input type="color" asp-for="@Model.CurrentPage.ColorFooter" value="@Model.CurrentPage.ColorFooter" />
+                                </select><br />
+                                Footer Color: <input type="color" asp-for="@Model.CurrentPage.ColorFooter" value="@Model.CurrentPage.ColorFooter" /><br />
+                                Footer Border: 
+                                <select asp-for="@Model.CurrentPage.BorderTypeFooter" value="@Model.CurrentPage.BorderTypeFooter">
+                                    <option>select border type</option>
+                                    <option value="Solid">Solid</option>
+                                    <option value="Dotted">Dotted</option>
+                                </select><br />
+                                Footer Border Color: <input type="color" asp-for="@Model.CurrentPage.BorderColorFooter"/><br />
                             </div>
                             <button type="submit" asp-page-handler="EditPage">Submit style</button>
                             <br />
-                        </form>
-                        <div>
-                            <form method="post">
-                                Upload backImage: <input type="file" asp-for="@Model.CurrentPage.ImgDataHeader" value="@Model.CurrentPage.ImgDataHeader" />
-                                <button type="submit" asp-page-handler="UploadHeaderImg">Upload</button>
-                            </form>
-                        </div>
+                        </form>                        
                     </div>
                     <div>
                         <div>
                             <form method="post">
                                 Rightbar Article:<br />
-                                <input asp-for="@Model.newOtherArticle.PageId" value="@Model.CurrentPage.Id" hidden/>
-                                Link Address: <input asp-for="@Model.newOtherArticle.Link" placeholder="link"/><br />
-                                Image URL: <input asp-for="@Model.newOtherArticle.ImgLink" placeholder="image url"/><br />
-                                Text: <input asp-for="@Model.newOtherArticle.Text" placeholder="text"/>
+                                <input asp-for="@Model.newOtherArticle.PageId" value="@Model.CurrentPage.Id" hidden />
+                                Link Address: <input asp-for="@Model.newOtherArticle.Link" placeholder="link" /><br />
+                                Image URL: <input asp-for="@Model.newOtherArticle.ImgLink" placeholder="image url" /><br />
+                                Text: <input asp-for="@Model.newOtherArticle.Text" placeholder="text" />
                                 <button type="submit" asp-page-handler="NewOtherArticle">Save Text</button>
                             </form>
-                        </div>                        
+                        </div>
                         <br />
                         <br />
                         <br />
@@ -401,6 +407,19 @@
                                 <input type="text" asp-for="@Model.PageDeleteID" value="@Model.SelectedPage" hidden />
                                 <button type="submit" asp-page-handler="DeletePage">Delete Page</button>
                             </form>
+                        </div>
+                        <div>
+                            @foreach (var x in Model.OtherArticleList)
+                            {
+                            <div>
+                                <form method="post">
+                                    <input asp-for="OaDeleteID" value="@x.Id" hidden />
+                                    <img src="@x.ImgLink" width="200" height="200"/>
+                                    <div>@x.Text</div>
+                                    <button type="submit" asp-page-handler="DeleteOA">Delete</button>
+                                </form>
+                            </div>
+                            }
                         </div>
                     </div>
                 }
@@ -449,7 +468,7 @@
         <div class="row">
             @if (Model.CurrentPage != null)
             {
-                @if (!Model.CurrentPage.Header)
+                @if (Model.CurrentPage.Header == false)
                 {
 
                     <div class="col-3 leftColor leftBorderColor leftBorderType">
@@ -481,18 +500,17 @@
             }
 
 
-            <div class="mainColor mainBorder mainBorderColor col-lg">
-                <br />
-                <br />
-                @if (Model.CurrentPage != null)
-                {
-                    <h1>@Model.CurrentPage.Title</h1><br />
-                }
+        <div class="mainColor mainBorder mainBorderColor col-lg">
+            <br />
+            <br />
+            @if (Model.CurrentPage != null)
+            {
+                <h1>@Model.CurrentPage.Title</h1><br />
+            }
 
-                @foreach (var x in Model.Articles)
-                {
-                    <img src="@x.ImgDataBack"/>
-                    <style>
+            @foreach (var x in Model.Articles)
+            {
+                <style>
                         .articleColor {
                             background-color: @x.BgColor;
                         }
@@ -502,123 +520,142 @@
                         .articleBorderType {
                             border-style: @x.BorderType;
                         }
-                    </style>
+                </style>
+
+                @if (Model.isSkribent || Model.isAdmin || x.Published)
+                {
                     @if (x.ImgBool)
                     {
-                        <style>
-                        .articleColor {
-                            background-color: @x.BgColor;
-                            background-image: url("img/10points3.jpg");
-                            background-size:auto;
-                        }
-                        </style>
-                    }
-                    @if (Model.isSkribent || Model.isAdmin || x.Published)
-                    {
-                        <div class="articleBorderType articleBorderColor articleColor">
-                            <h3>@x.Header</h3>
-                            @Html.Raw(x.Paragraph)
-                        </div>
-
-                        <br />
-                        <div id="carouselExampleSlidesOnly" class="carousel slide" data-interval="1500" data-ride="carousel">
-                            <div class="carousel-inner w-@x.ImgWidth">
-
-                                @foreach (var y in Model.imgList)
+                        foreach (var y in Model.oaImageClassList)
+                        {
+                            if (y.ArticleID == x.Id)
+                            {
+                                if (!String.IsNullOrEmpty(y.Data))
                                 {
-                                    @if (y.ArticleID == x.Id)
-                                    {
-                                        @if (y.First)
-                                        {
-                                            <div class="carousel-item active w-20">
-                                                <img src="@y.Data" class="w-50" alt="...">
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="carousel-item ">
-                                                <img src="@y.Data" class="w-50" alt="...">
-                                            </div>
-                                        }
-                                    }
+                                    <div style="background-image: url('@y.Data'); background-color: @x.BgColor; border-color: @x.BorderColor; border-style: @x.BorderType;">
+                                        <h3>@x.Header</h3>
+                                        @Html.Raw(x.Paragraph)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="background-color: @x.BgColor; border-color: @x.BorderColor; border-style: @x.BorderType;">
+                                        <h3>@x.Header</h3>
+                                        @Html.Raw(x.Paragraph)
+                                    </div>
                                 }
 
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (x.PageId == Model.CurrentPage.Id)
+                        {
+                            <div style="background-color: @x.BgColor; border-color: @x.BorderColor; border-style: @x.BorderType;">
+                                <h3>@x.Header</h3>
+                                @Html.Raw(x.Paragraph)
                             </div>
-                        </div>
-                        <br />
-                        <div>
-                            @foreach (var y in Model.LinkList)
+                        }
+                    }
+
+
+                    <br />
+                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-interval="1500" data-ride="carousel">
+                        <div class="carousel-inner w-@x.ImgWidth">
+
+                            @foreach (var y in Model.imgList)
                             {
-                                @if (y.ArticleId == x.Id)
+                                @if (y.ArticleID == x.Id)
                                 {
-                                    @if (y.Video)
+                                    @if (y.First)
                                     {
-                                        <iframe width="370" height="210" src="@y.LinkString" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br />
+                                        <div class="carousel-item active w-20">
+                                            <img src="@y.Data" class="w-50" alt="...">
+                                        </div>
                                     }
                                     else
                                     {
-                                        <a class="@x.LinkType" href="@y.LinkString">@y.LinkString</a><br />
+                                        <div class="carousel-item ">
+                                            <img src="@y.Data" class="w-50" alt="...">
+                                        </div>
                                     }
                                 }
                             }
 
-                            @foreach (var y in Model.apiClassList)
+                        </div>
+                    </div>
+                    <br />
+                    <div>
+                        @foreach (var y in Model.LinkList)
+                        {
+                            @if (y.ArticleId == x.Id)
                             {
-                                if (y.ArticleID == x.Id)
+                                @if (y.Video)
                                 {
-                                    @foreach (var z in y.ApiStringList)
-                                    {
-                                        <div>@z</div>
-                                    }
-                                    <img src="@y.imgString" width="200" />
+                                    <br /><iframe width="370" height="210" src="@y.LinkString" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br />
+                                }
+                                else
+                                {                                    
+                                    <a class="@x.LinkType" href="@y.LinkString">@y.LinkString</a><br />
                                 }
                             }
-                        </div>
+                        }
+
+                        @foreach (var y in Model.apiClassList)
+                        {
+                            if (y.ArticleID == x.Id)
+                            {
+                                @foreach (var z in y.ApiStringList)
+                                {
+                                    <div>@z</div>
+                                }
+                                <img src="@y.imgString" width="200" />
+                            }
+                        }
+                    </div>
+                    <br />
+                    <div>
+                        @if (Model.pdfList != null)
+                        {
+                            <h6>Bifogade dokument</h6>
+                            @foreach (var y in Model.pdfList)
+                            {
+                                @if (y.ArticleID == x.Id)
+                                {
+                                    <form method="post">
+                                        <input asp-for="@Model.pdfID" value="@y.ID" hidden />
+                                        @y.Title <button asp-page-handler="DownloadDoc" type="submit">Ladda ned dokument</button>
+                                    </form>
+                                }
+                            }
+                        }
+
+                    </div>
+                    @if (Model.isSkribent || Model.isAdmin)
+                    {
                         <br />
                         <div>
-                            @if (Model.pdfList != null)
-                            {
-                                <h6>Bifogade dokument</h6>
-                                @foreach (var y in Model.pdfList)
-                                {
-                                    @if (y.ArticleID == x.Id)
-                                    {
-                                        <form method="post">
-                                            <input asp-for="@Model.pdfID" value="@y.ID" hidden />
-                                            @y.Title <button asp-page-handler="DownloadDoc" type="submit">Ladda ned dokument</button>
-                                        </form>
-                                    }
-
-                                }
-                            }
-
+                            <a href="?ArticleID=@x.Id">select article</a>
                         </div>
-                        @if (Model.isSkribent || Model.isAdmin)
-                        {
-                            <br />
-                            <div>
-                                <a href="?ArticleID=@x.Id">select article</a>
-                            </div>
-                            <br />
-                        }
+                        <br />
                     }
                 }
-                <!--Höger Kolumn-->
-            </div>
-            @if (Model.CurrentPage != null)
+            }
+
+            <!--Höger Kolumn-->
+        </div>
+            @if (Model.CurrentPage != null && Model.CurrentPage.Right)
             {
-                @if (Model.CurrentPage.Right)
-                {
-                    <div class="col-3 rightBorderColor rightBorderType rightColor">
-                        @foreach (var x in Model.OtherArticleList)
-	                    {
+                <div class="col-3 rightBorderColor rightBorderType rightColor">
+                    @foreach (var x in Model.OtherArticleList)
+                    {
                         <div class="container border btn-danger rounded-bottom">
                             <a href="@x.Link"><img style="width:100%" src="@x.ImgLink" /></a>
                             @x.Text
                         </div>
-	                    }
-                    </div>
-                }
+                    }
+                </div>
             }
         </div>
         <!--Footer-->
@@ -626,7 +663,7 @@
         {
             @if (Model.CurrentPage.Footer)
             {
-                <div class="row bg-warning">
+                <div class="row" style="background-color: @Model.CurrentPage.ColorFooter; border-color: @Model.CurrentPage.BorderColorFooter; border-style: @Model.CurrentPage.BorderTypeFooter">
                     <Font face="@Model.CurrentPage.FontFooter">@Model.CurrentPage.FooterString</Font>
                 </div>
             }
@@ -634,7 +671,8 @@
 
     }
 
-
+    
+    <div>@Model.CurrentPage.Title</div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
@@ -684,7 +722,7 @@
         .headerBorderType{
             border-style: @Model.CurrentPage.BorderTypeHeader;
         }
-                
+
         .leftBorderColor{
             border-color: @Model.CurrentPage.BorderColorLeftbar;
         }
@@ -698,8 +736,6 @@
         .rightBorderType{
             border-style: @Model.CurrentPage.BorderTypeRightbar;
         }
-
-        
     </style>
 
     @if (Model.CurrentPage.ImgBool)

@@ -12,24 +12,6 @@
 
 </h1>
 
-@if (Model.isAdmin)
-{
-    <p>Det här får bara adminstratören se</p>
-}
-@if (Model.isNy)
-{
-    <p>Det här får bara användarna se</p>
-}
-
-
-@*<div>
-        Befintliga roller: <br />
-        @foreach (var role in Model.Roles)
-        {
-            <p>@role.Name</p>
-        }
-
-    </div>*@
 <div>
     Befintliga användare: <br />
 
@@ -53,7 +35,7 @@
         {
             @if (Model.isAdmin || Model.isNy || Model.isSkribent)
             {
-                @*if (await Model._userManager.IsInRoleAsync(user, role.Name))
+                if (await Model._userManager.IsInRoleAsync(user, role.Name))
                 {
                     <td><a href="?RemoveUserId=@user.Id&Role=@role.Name" class="bg-success text-white">@role.Name</a></td>
 
@@ -61,7 +43,7 @@
                 else
                 {
                     <td><a href="?AddUserId=@user.Id&Role=@role.Name" class="bg-danger text-white">@role.Name</a></td>
-                }*@
+                }
             }
 
 
@@ -74,11 +56,11 @@
 </div>
 
 
-<form method="post">
+@*<form method="post">
     <label for="RoleName">Ny roll</label>
     <input name="RoleName" />
     <input type="submit" value="Spara Roll" />
-</form>
+</form>*@
 
 @if (Model.isAdmin)
 {

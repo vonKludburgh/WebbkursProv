@@ -98,28 +98,27 @@ namespace WebbkursProv.Pages.Admin
         }
 
 
-        public async Task<IActionResult> OnPostAsync()
-        {
-            Users = _userManager.Users;
-            if (RoleName != null)
-            {
-                await CreateRole(RoleName);
-            }
-            return RedirectToPage("./index");
-        }
+        //public async Task<IActionResult> OnPostAsync()
+        //{
+        //    Users = _userManager.Users;
+        //    if (RoleName != null)
+        //    {
+        //        await CreateRole(RoleName);
+        //    }
+        //    return RedirectToPage("./index");
+        //}
 
-        public async Task CreateRole(string roleName)
-        {
-            bool exist = await _roleManager.RoleExistsAsync(roleName);
-            if (!exist)
-            {
-                // first we create Admin role 
-                var role = new IdentityRole
-                {
-                    Name = roleName
-                };
-                await _roleManager.CreateAsync(role);
-            }
-        }
+        //public async Task CreateRole(string roleName)
+        //{
+        //    bool exist = await _roleManager.RoleExistsAsync(roleName);
+        //    if (!exist)
+        //    {
+        //        var role = new IdentityRole
+        //        {
+        //            Name = roleName
+        //        };
+        //        await _roleManager.CreateAsync(role);
+        //    }
+        //}
     }
 }

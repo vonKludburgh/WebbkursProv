@@ -88,19 +88,29 @@ namespace WebbkursProv.Areas.Identity.Pages.Account
                     Email = Input.Email, 
                     AlterEgo = Input.AlterEgo
                 };
+
+                if (_roleManager == null)
+                {
+                    var role = new IdentityRole
+                    {
+                        Name = "Ny"
+                    };
+                    var role2 = new IdentityRole
+                    {
+                        Name = "Skribent"
+                    };
+                    var role3 = new IdentityRole
+                    {
+                        Name = "Admin"
+                    };
+                    await _roleManager.CreateAsync(role);
+                }
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
                 if (result.Succeeded)
                 {
-                    //if (_roleManager == null)
-                    //{
-                    //    var role = new IdentityRole
-                    //    {
-                    //        Name = "Ny"
-                    //    };
-                    //    await _roleManager.CreateAsync(role);
-                    //}
-
-                    var roleresult = await _userManager.AddToRoleAsync(user, "Ny");
+                    var roleresult = await _userManager.AddToRoleAsync(user, "Ny");                    
 
                     _logger.LogInformation("User created a new account with password.");
 

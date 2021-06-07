@@ -33,10 +33,10 @@ namespace WebbkursProv.Gateway
         public async Task<CreatedPage> PostCreatedPage(CreatedPage createdPage)
         {
             createdPage.BgColor = "#ffffff";
-            //createdPage.ColorFooter = "#ffffff";
-            //createdPage.ColorHeader = "#ffffff";
-            //createdPage.ColorLeftbar = "#ffffff";
-            //createdPage.ColorRightbar = "#ffffff";
+            createdPage.ColorFooter = "#ffffff";
+            createdPage.ColorHeader = "#ffffff";
+            createdPage.ColorLeftbar = "#ffffff";
+            createdPage.ColorRightbar = "#ffffff";
 
             var response = await _httpClient.PostAsJsonAsync(_configuration["WPPage"], createdPage);
             CreatedPage returnValue = await response.Content.ReadFromJsonAsync<CreatedPage>();
