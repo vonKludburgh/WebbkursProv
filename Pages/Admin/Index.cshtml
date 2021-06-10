@@ -11,6 +11,8 @@
 
 
 </h1>
+@if (Model.isAdmin)
+{
 
 <div>
     Befintliga användare: <br />
@@ -54,6 +56,13 @@
     </table>
 
 </div>
+}
+else
+{
+    <div>
+        Du är inte Admin!
+    </div>
+}
 
 
 @*<form method="post">
@@ -61,18 +70,4 @@
     <input name="RoleName" />
     <input type="submit" value="Spara Roll" />
 </form>*@
-
-@if (Model.isAdmin)
-{
-    <div>Admin</div>
-}
-else if (Model.isSkribent)
-{
-    <div>Skribent</div>
-} 
-else if (Model.isNy)
-{
-    <div>Ny</div>
-}
-
 
