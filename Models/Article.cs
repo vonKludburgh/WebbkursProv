@@ -32,10 +32,6 @@ namespace WebbkursProv.Models
         public string BorderColor { get; set; }
         [JsonPropertyName("borderType")]
         public string BorderType { get; set; }
-        [JsonPropertyName("imgDataBack")]
-        public byte[] ImgDataBack { get; set; }
-        [JsonPropertyName("imgBool")]
-        public bool ImgBool { get; set; }
         [JsonPropertyName("imgWidth")]
         public string ImgWidth { get; set; }
         [JsonPropertyName("linkType")]

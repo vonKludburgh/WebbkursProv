@@ -91,6 +91,7 @@ namespace WebbkursProv.Areas.Identity.Pages.Account
 
                 if (_roleManager == null)
                 {
+                    // om databasen med roller rensas så skapas dessa tre roller
                     var role = new IdentityRole
                     {
                         Name = "Ny"

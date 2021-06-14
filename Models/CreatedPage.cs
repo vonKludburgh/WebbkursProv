@@ -34,10 +34,6 @@ namespace WebbkursProv.Models
         public string BorderColor { get; set; }
         [JsonPropertyName("borderType")]
         public string BorderType { get; set; }
-        //[JsonPropertyName("imgData")]
-        //public byte[] ImgData { get; set; }
-        [JsonPropertyName("imgBool")]
-        public bool ImgBool { get; set; }
 
         //Style Header
         [JsonPropertyName("fontHeader")]
@@ -48,10 +44,6 @@ namespace WebbkursProv.Models
         public string BorderColorHeader { get; set; }
         [JsonPropertyName("borderTypeHeader")]
         public string BorderTypeHeader { get; set; }
-        //[JsonPropertyName("imgDataHeader")]
-        //public byte[] ImgDataHeader { get; set; }
-        [JsonPropertyName("imgBoolHeader")]
-        public bool ImgBoolHeader { get; set; }
 
         //Style Left
         [JsonPropertyName("fontLeftbar")]
@@ -62,10 +54,6 @@ namespace WebbkursProv.Models
         public string BorderColorLeftbar { get; set; }
         [JsonPropertyName("borderTypeLeftbar")]
         public string BorderTypeLeftbar { get; set; }
-        //[JsonPropertyName("imgDataLeftbar")]
-        //public byte[] ImgDataLeftbar { get; set; }
-        [JsonPropertyName("imgBoolLeftbar")]
-        public bool ImgBoolLeftbar { get; set; }
 
         //Style Right
         [JsonPropertyName("colorRightbar")]
@@ -74,10 +62,6 @@ namespace WebbkursProv.Models
         public string BorderColorRightbar { get; set; }
         [JsonPropertyName("borderTypeRightbar")]
         public string BorderTypeRightbar { get; set; }
-        //[JsonPropertyName("imgDataRightbar")]
-        //public byte[] ImgDataRightbar { get; set; }
-        [JsonPropertyName("imgBoolRightbar")]
-        public bool ImgBoolRightbar { get; set; }
 
         //Style Footer
         [JsonPropertyName("fontFooter")]

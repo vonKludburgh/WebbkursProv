@@ -35,20 +35,15 @@
 
         @foreach (var role in Model.Roles)
         {
-            @if (Model.isAdmin || Model.isNy || Model.isSkribent)
+            if (await Model._userManager.IsInRoleAsync(user, role.Name))
             {
-                if (await Model._userManager.IsInRoleAsync(user, role.Name))
-                {
-                    <td><a href="?RemoveUserId=@user.Id&Role=@role.Name" class="bg-success text-white">@role.Name</a></td>
+                <td><a href="?RemoveUserId=@user.Id&Role=@role.Name" class="bg-success text-white">@role.Name</a></td>
 
-                }
-                else
-                {
-                    <td><a href="?AddUserId=@user.Id&Role=@role.Name" class="bg-danger text-white">@role.Name</a></td>
-                }
             }
-
-
+            else
+            {
+                <td><a href="?AddUserId=@user.Id&Role=@role.Name" class="bg-danger text-white">@role.Name</a></td>
+            }
         }
 
     </tr>
@@ -63,11 +58,4 @@ else
         Du är inte Admin!
     </div>
 }
-
-
-@*<form method="post">
-    <label for="RoleName">Ny roll</label>
-    <input name="RoleName" />
-    <input type="submit" value="Spara Roll" />
-</form>*@
-
+<div>@Model.AdminCheck</div>

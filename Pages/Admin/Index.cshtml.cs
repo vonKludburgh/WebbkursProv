@@ -34,6 +34,7 @@ namespace WebbkursProv.Pages.Admin
         public bool isNy { get; set; }
         public bool isSkribent { get; set; }
         public bool isAdmin { get; set; }
+        public bool AdminCheck { get; set; }
 
         public IQueryable<WebbkursProvUser> Users { get; set; }
 
@@ -51,6 +52,7 @@ namespace WebbkursProv.Pages.Admin
             Roles = _roleManager.Roles.ToList();
             Users = _userManager.Users;
 
+            //Ändrar roll samt tar bort från andra roller
             if (AddUserId != null)
             {
                 var alterUser = await _userManager.FindByIdAsync(AddUserId);
@@ -92,33 +94,27 @@ namespace WebbkursProv.Pages.Admin
             isSkribent = await _userManager.IsInRoleAsync(CurrentUser, "Skribent");
             isAdmin = await _userManager.IsInRoleAsync(CurrentUser, "Admin");
 
-            //await _userManager.AddToRoleAsync(CurrentUser, "Admin");
+            // om Admin saknas blir den som loggar in på /admin ny Admin
+            await CheckAdminAsync();
 
             return Page();
         }
 
+        public async Task<IActionResult> CheckAdminAsync()
+        {
+            Users = _userManager.Users;
 
-        //public async Task<IActionResult> OnPostAsync()
-        //{
-        //    Users = _userManager.Users;
-        //    if (RoleName != null)
-        //    {
-        //        await CreateRole(RoleName);
-        //    }
-        //    return RedirectToPage("./index");
-        //}
-
-        //public async Task CreateRole(string roleName)
-        //{
-        //    bool exist = await _roleManager.RoleExistsAsync(roleName);
-        //    if (!exist)
-        //    {
-        //        var role = new IdentityRole
-        //        {
-        //            Name = roleName
-        //        };
-        //        await _roleManager.CreateAsync(role);
-        //    }
-        //}
+            foreach (var x in Users)
+            {
+                AdminCheck = await _userManager.IsInRoleAsync(x, "Admin");
+                if (AdminCheck) break;
+            }
+            if (AdminCheck == false)
+            {
+                await _userManager.AddToRoleAsync(CurrentUser, "Admin");
+            }
+            return Page();
+        }
+        
     }
 }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WebbkursProv.Areas.Identity.Data;
@@ -188,214 +189,17 @@ namespace WebbkursProv.Pages
 
         #endregion OtherArticle
 
+        [BindProperty(SupportsGet = true)]
+        public List<Link> apiList { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
-            // User
-
-            //Roles = _roleManager.Roles.ToList();
-            //Users = _userManager.Users;
-
-            //CurrentUser = await _userManager.GetUserAsync(User);
-            await UserTasksAsync();
-            //if (CurrentUser != null)
-            //{
-            //    isNy = await _userManager.IsInRoleAsync(CurrentUser, "Ny");
-            //    isSkribent = await _userManager.IsInRoleAsync(CurrentUser, "Skribent");
-            //    isAdmin = await _userManager.IsInRoleAsync(CurrentUser, "Admin");
-            //}
-
-            //if (isSkribent)
-            //{
-            //    CookieOptions op = new CookieOptions();
-            //    op.Expires = new DateTime(2022, 02, 02);
-            //    op.MaxAge = TimeSpan.FromDays(365);
-            //    Response.Cookies.Append("xxx", "Skribenten", op);
-            //}
-
-            //if (isAdmin)
-            //{
-            //    CookieOptions op = new CookieOptions();
-            //    op.Expires = new DateTime(2022, 02, 02);
-            //    op.MaxAge = TimeSpan.FromDays(365);
-            //    Response.Cookies.Append("xxx", "Big Boss", op);
-            //}
-
-            //CookieValue = Request.Cookies.TryGetValue("xxx", out string cvalue ) ? cvalue : null;
-
-            // Page
-
-            //cPages = await _gateway.GetCreatedPages();
-            //cPages = cPages.OrderBy(x => x.Order).ToList();
-            await PageTasksAsync();
-            //if (cPages.Count < 1)
-            //{
-            //    CreatedPage newpage = new CreatedPage();
-            //    newpage.Title = "Home";
-            //    newpage.TimeStamp = DateTime.Now;
-
-            //    await _gateway.PostCreatedPage(newpage);
-            //}
-
-            //if (String.IsNullOrEmpty(SelectedPage))
-            //{
-            //    if (cPages.Count > 0)
-            //    {
-            //        CurrentPage = cPages.First();
-            //        SelectedPage = CurrentPage.Title;
-            //    }                
-            //}
-            //else
-            //{
-            //    foreach (var x in cPages)
-            //    {
-            //        if (x.Title == SelectedPage)
-            //        {
-            //            OrderID = x.Id;
-            //            CurrentPage = cPages.FirstOrDefault(z => z.Id == x.Id);
-            //        }
-            //    }
-            //    if (isAdmin == false && isSkribent == false && String.IsNullOrEmpty(SelectedPage) == false)
-            //    {
-            //        CurrentPage.Count++;
-            //        await OnPostEditPageAsync();
-            //    }
-            //}
-
-
-
-            // Article
-
+            await UserTasksAsync();            
+            await PageTasksAsync();            
             await ArticleTasksAsync();
-
-            //var myart = await _gateway.GetArticles();
-            //Articles = myart.Where(x => x.PageId == CurrentPage.Id).ToList();
-            //Articles = Articles.OrderBy(x => x.Order).ToList();
-
-            //if (ArticleID != 0)
-            //{
-            //    SelectedArticle = myart.FirstOrDefault(x => x.Id == ArticleID);
-            //}
-
-
-            // Image
-
-            //Images = await _gateway.GetImages();
             await ImageTasksAsync();
-            //foreach (var x in Images)
-            //{
-            //    if (x.Title.Contains(".jpg")|| x.Title.Contains(".png"))
-            //    { 
-            //        string imageBase64Data = Convert.ToBase64String(x.ImageData);
-            //        string ImageUrl = string.Format($"data:image/jpg;base64, {imageBase64Data}");
-            //        string imageName = imageBase64Data;
-            //        imageClass aaa = new imageClass();
-            //        aaa.Data = ImageUrl;
-            //        aaa.ArticleID = x.ArticleId;
-            //        aaa.imgID = x.Id;
-            //        imgList.Add(aaa);
-            //    }
-            //    else
-            //    {
-            //        string imageBase64Data = Convert.ToBase64String(x.ImageData);
-            //        string ImageUrl = string.Format($"data:image/jpg;base64, {imageBase64Data}");
-            //        string imageName = imageBase64Data;
-            //        pdfDoc aaa = new pdfDoc();
-            //        aaa.Byte = ImageUrl;
-            //        aaa.Title = x.Title;
-            //        aaa.ArticleID = x.ArticleId;
-            //        aaa.ID = x.Id;
-            //        pdfList.Add(aaa);
-            //    }                
-            //}
-
-            //imgList = imgList.OrderBy(x => x.ArticleID).ToList();
-            //long ccc = -1;
-
-            //foreach (var x in imgList)
-            //{                
-            //    if (ccc != x.ArticleID)
-            //    {
-            //        x.First = true;
-            //    }
-            //    ccc = x.ArticleID;
-            //}
-
-            //SaveBackImage = Images.Find(x => x.Location == "Mainbody" && x.PageId == CurrentPage.Id);
-            //string imageBase64DataX = Convert.ToBase64String(SaveBackImage.ImageData);
-            //string ImageUrlX = string.Format($"data:image/jpg;base64, {imageBase64DataX}");
-            //string imageNameX = imageBase64DataX;
-            //SaveBackImageHeader.Data = ImageUrlX;
-
-
-            // Link
             await LinkTaskAsync();
-            //List<Link> LList = await _gateway.GetLinks();
-            //LinkList2 = await _gateway.GetLinks();
-            //List<Link> apiList = new List<Link>();
-
-            //foreach (var x in LList)
-            //{
-            //    if (x.LinkString.Contains("api") || x.LinkString.Contains("json"))
-            //    {
-            //        apiList.Add(x);
-            //    }
-            //    else
-            //    {
-            //        LinkList.Add(x);
-            //    }
-            //}
-
-            //if (apiList != null)
-            //{
-            //    foreach (var x in apiList)
-            //    {
-            //        Task<string> apiTask = client.GetStringAsync(x.LinkString);
-            //        string apiString = await apiTask;
-            //        string[] stringArray = apiString.Split(',');
-            //        apiClass aclass = new apiClass();
-            //        aclass.ArticleID = x.ArticleId;
-
-            //        for (int i = 0; i < stringArray.Length; i++)
-            //        {
-            //            if (!stringArray[i].Contains("null"))
-            //            {
-            //                if (stringArray[i].Contains(".png") || stringArray[i].Contains(".jpg"))
-            //                {
-            //                    string aString = "";
-            //                    string[] aStringArray = new string[3];
-            //                    aString = stringArray[i];
-            //                    aStringArray = aString.Split('"');
-            //                    aclass.imgString = aStringArray[3];
-            //                }
-            //                else
-            //                {
-            //                    string ddd = stringArray[i];
-            //                    aclass.ApiStringList.Add(ddd);
-            //                }
-            //            }                        
-            //        }
-            //        apiClassList.Add(aclass);
-            //    }
-            //}
-
-            // Other Article
-
-            //OtherArticleList = await _gateway.GetOtherArticles();
-            //OtherArticleList = OtherArticleList.Where(x => CurrentPage.Id == x.PageId).ToList();
             await OtherArticleTasksAsync();
-            //foreach (var x in myart)
-            //{
-            //    if (x.ImgDataBack != null)
-            //    {
-            //        string imageBase64Data = Convert.ToBase64String(x.ImgDataBack);
-            //        string ImageUrl = string.Format($"data:image/jpg;base64, {imageBase64Data}");
-            //        string imageName = imageBase64Data;
-            //        imageClass aaa = new imageClass();
-            //        aaa.Data = ImageUrl;
-            //        aaa.ArticleID = x.Id;
-            //        oaImageClassList.Add(aaa);
-            //    }
-            //}
 
             return Page();
         }
@@ -475,11 +279,6 @@ namespace WebbkursProv.Pages
             Articles = await _gateway.GetArticles();
             List<Article> xArticles = Articles.Where(x => x.Id == NewArticle.PageId).ToList();
             long ordernumb = 0;
-            //if (xArticles != null)
-            //{
-            //    ordernumb = xArticles.Select(x => x.Order).Max();
-                
-            //}
             NewArticle.Order = ordernumb++;
             NewArticle.TimeStamp = DateTime.Now;
             await _gateway.PostArticle(NewArticle);
@@ -488,28 +287,7 @@ namespace WebbkursProv.Pages
 
         public async Task<IActionResult> OnPostEditArticleAsync()
         {
-            
-            //if (HttpContext.Request.Form.Files.Count > 0)
-            //{
-            //    var file = Request.Form.Files[0];
-                
-            //    using (MemoryStream ms = new MemoryStream())
-            //    {
-            //        file.CopyTo(ms);
-            //        SelectedArticle.ImgDataBack = ms.ToArray();
-            //    }
-            //}
-            //else
-            //{
-            //    foreach (var x in oaImageClassList)
-            //    {
-            //        if (x.ArticleID == SelectedArticle.Id)
-            //        {
-                        
-            //        }
-            //    }
-            //}
-
+            SelectedArticle.TimeStamp = DateTime.Now;
             await _gateway.EditArticle(SelectedArticle.Id, SelectedArticle);
             return RedirectToPage("./Index");
         }
@@ -593,12 +371,6 @@ namespace WebbkursProv.Pages
                 string fileName = doc.Title;
                 return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
 
-                //byte[] byteArr = doc.ImageData;
-                //string mimeType = "application/pdf";
-                //return new FileContentResult(byteArr, mimeType)
-                //{
-                //    FileDownloadName = $"Invoice {doc.ImageData}.pdf"
-                //};
             }
         }
 
@@ -663,6 +435,7 @@ namespace WebbkursProv.Pages
 
         #endregion OtherArticle
 
+        // SEO anpassar URL
         public class SlugifyParameterTransformer : IOutboundParameterTransformer
         {
             public string TransformOutbound(object value)
@@ -679,6 +452,7 @@ namespace WebbkursProv.Pages
 
             CurrentUser = await _userManager.GetUserAsync(User);
 
+            // bestämmer vilken roll användaren har
             if (CurrentUser != null)
             {
                 isNy = await _userManager.IsInRoleAsync(CurrentUser, "Ny");
@@ -686,6 +460,7 @@ namespace WebbkursProv.Pages
                 isAdmin = await _userManager.IsInRoleAsync(CurrentUser, "Admin");
             }
 
+            // bestämmer cookievärdet
             if (isSkribent)
             {
                 CookieOptions op = new CookieOptions();
@@ -706,9 +481,10 @@ namespace WebbkursProv.Pages
 
             return Page();
         }
-
+                
         public async Task<IActionResult> ArticleTasksAsync()
         {
+            // behandlar artikel information
             var myart = await _gateway.GetArticles();
             Articles = myart.Where(x => x.PageId == CurrentPage.Id).ToList();
             Articles = Articles.OrderBy(x => x.Order).ToList();
@@ -725,6 +501,7 @@ namespace WebbkursProv.Pages
         {
             Images = await _gateway.GetImages();
 
+            // bestämmer kategori för bilder och dokument
             foreach (var x in Images)
             {
                 if (x.Title.Contains(".jpg") || x.Title.Contains(".png"))
@@ -771,8 +548,9 @@ namespace WebbkursProv.Pages
         {
             List<Link> LList = await _gateway.GetLinks();
             LinkList2 = await _gateway.GetLinks();
-            List<Link> apiList = new List<Link>();
+            apiList = new List<Link>();
 
+            // bestämmer vilken kategori en länk hamnar i. Länk/API/Plugin
             foreach (var x in LList)
             {
                 if (x.LinkString.Contains("api") || x.LinkString.Contains("json"))
@@ -785,11 +563,13 @@ namespace WebbkursProv.Pages
                 }
             }
 
+            //bestämmer om det är bild eller text
             if (apiList != null)
             {
                 foreach (var x in apiList)
                 {
-                    Task<string> apiTask = client.GetStringAsync(x.LinkString);
+                    string sss = x.LinkString;
+                    Task<string> apiTask = client.GetStringAsync(sss);
                     string apiString = await apiTask;
                     string[] stringArray = apiString.Split(',');
                     apiClass aclass = new apiClass();
@@ -827,19 +607,6 @@ namespace WebbkursProv.Pages
             OtherArticleList = await _gateway.GetOtherArticles();
             OtherArticleList = OtherArticleList.Where(x => CurrentPage.Id == x.PageId).ToList();
             
-            foreach (var x in myart)
-            {
-                if (x.ImgDataBack != null)
-                {
-                    string imageBase64Data = Convert.ToBase64String(x.ImgDataBack);
-                    string ImageUrl = string.Format($"data:image/jpg;base64, {imageBase64Data}");
-                    string imageName = imageBase64Data;
-                    imageClass aaa = new imageClass();
-                    aaa.Data = ImageUrl;
-                    aaa.ArticleID = x.Id;
-                    oaImageClassList.Add(aaa);
-                }
-            }
             return Page();
         }
 
@@ -847,7 +614,7 @@ namespace WebbkursProv.Pages
         {
             cPages = await _gateway.GetCreatedPages();
             cPages = cPages.OrderBy(x => x.Order).ToList();
-
+            // om ingen annan sida finns. skapa en som heter Home
             if (cPages.Count < 1)
             {
                 CreatedPage newpage = new CreatedPage();
@@ -857,6 +624,7 @@ namespace WebbkursProv.Pages
                 await _gateway.PostCreatedPage(newpage);
             }
 
+            // Bestämmer vilken sida som visas per automatik efter nya värden sparats
             if (String.IsNullOrEmpty(SelectedPage))
             {
                 if (cPages.Count > 0)

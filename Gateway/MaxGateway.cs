@@ -12,6 +12,7 @@ namespace WebbkursProv.Gateway
 {
     public class MaxGateway : IMaxGateway
     {
+        // Denna Gateway sköter kommunikationen med microservicen
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
 
