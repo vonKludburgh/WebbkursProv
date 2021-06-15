@@ -20,9 +20,7 @@ namespace WebbkursProv.Pages.Admin
         [BindProperty(SupportsGet = true)]
         public string Role { get; set; }
 
-
         public WebbkursProvUser CurrentUser { get; set; }
-
 
         [BindProperty]
         public string RoleName { get; set; }
@@ -36,11 +34,11 @@ namespace WebbkursProv.Pages.Admin
         public bool isAdmin { get; set; }
         public bool AdminCheck { get; set; }
 
-        public IQueryable<WebbkursProvUser> Users { get; set; }
-
+        public List<WebbkursProvUser> Users { get; set; }
 
         private readonly RoleManager<IdentityRole> _roleManager;
         public UserManager<WebbkursProvUser> _userManager;
+
         public IndexModel(RoleManager<IdentityRole> roleManager, UserManager<WebbkursProvUser> userManager)
         {
             _roleManager = roleManager;
@@ -50,7 +48,7 @@ namespace WebbkursProv.Pages.Admin
         public async Task<IActionResult> OnGetAsync()
         {
             Roles = _roleManager.Roles.ToList();
-            Users = _userManager.Users;
+            Users = _userManager.Users.ToList();
 
             //Ändrar roll samt tar bort från andra roller
             if (AddUserId != null)
@@ -102,7 +100,7 @@ namespace WebbkursProv.Pages.Admin
 
         public async Task<IActionResult> CheckAdminAsync()
         {
-            Users = _userManager.Users;
+            Users = _userManager.Users.ToList();
 
             foreach (var x in Users)
             {
@@ -112,9 +110,11 @@ namespace WebbkursProv.Pages.Admin
             if (AdminCheck == false)
             {
                 await _userManager.AddToRoleAsync(CurrentUser, "Admin");
+                await _userManager.RemoveFromRoleAsync(CurrentUser, "Ny");
+                await _userManager.RemoveFromRoleAsync(CurrentUser, "Skribent");
             }
             return Page();
         }
-        
+
     }
 }

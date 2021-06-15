@@ -206,7 +206,7 @@ namespace WebbkursProv.Pages
 
         #region PostPage
 
-        public void OnPostNewPage()
+        public async Task<IActionResult> OnPostNewPageAsync()
         {
             CreatedPage newPage = new CreatedPage();
 
@@ -215,8 +215,9 @@ namespace WebbkursProv.Pages
                 newPage = newCreatedPage;
                 newPage.TimeStamp = DateTime.Now;
 
-                _gateway.PostCreatedPage(newPage);
-            }            
+                await _gateway.PostCreatedPage(newPage);
+            }  
+            return RedirectToPage("./Index");
         }
 
         public async Task<IActionResult> OnPostEditPageAsync()
