@@ -630,8 +630,14 @@ namespace WebbkursProv.Pages
             {
                 if (cPages.Count > 0)
                 {
-                    CurrentPage = cPages.First();
+                    CurrentPage = cPages.First();                    
                     SelectedPage = CurrentPage.Title;
+
+                    if (isAdmin == false && isSkribent == false)
+                    {
+                        CurrentPage.Count++;
+                        await OnPostEditPageAsync();
+                    }
                 }
             }
             else

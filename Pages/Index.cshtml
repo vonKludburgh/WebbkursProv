@@ -6,42 +6,295 @@
 
 @if (Model.CurrentPage != null)
 {
-    if (Model.CurrentPage.Header == false)
+    if (Model.CurrentPage.Header == false && Model.CurrentPage.Right == false)
     {
-        <link href="~/css/site.css?v=1.0" rel="stylesheet" type="text/css" />
+        <link href="~/css/Style3.css?v=1.0" rel="stylesheet" type="text/css" />
     }
-    else
+    else if (Model.CurrentPage.Header == true && Model.CurrentPage.Right == false)
     {
-        <link href="~/css/Style1.css?v=1.0" rel="stylesheet" type="text/css" />
+        <link href="C:\Users\Max\source\repos\WebbkursProv\wwwroot\css\Style1.css" rel="stylesheet" type="text/css" />
+    }
+    else if (Model.CurrentPage.Header == false && Model.CurrentPage.Right == true)
+    {
+        <link href="~/css/Style2.css?v=1.0" rel="stylesheet" type="text/css" />
+    }
+    else if (Model.CurrentPage.Header == true && Model.CurrentPage.Right == true)
+    {
+        <link href="~/css/Style3.css?v=1.0" rel="stylesheet" type="text/css" />
     }
 }
 
 <partial name="_CookieConsentPartial">
     @if (!String.IsNullOrEmpty(Model.SelectedArticle.Header))
     {
-        @if (!String.IsNullOrEmpty(Model.CookieValue))
+    @if (!String.IsNullOrEmpty(Model.CookieValue))
         {
-            <div> Hello @Model.CookieValue !</div>
+    <div> Hello @Model.CookieValue !</div>
         }
 
-        <div>
-            <h3>Artikel Text</h3>
-            <form method="post">
-                <input asp-for="@Model.DeleteArticleID" value="@Model.SelectedArticle.Id" hidden />
-                <button asp-page-handler="DeleteArticle" type="submit">Ta bort artikel</button>
-            </form><br />
+    <div>
+        <h3>Artikel Text</h3>
+        <form method="post">
+            <input asp-for="@Model.DeleteArticleID" value="@Model.SelectedArticle.Id" hidden />
+            <button asp-page-handler="DeleteArticle" type="submit">Ta bort artikel</button>
+        </form><br />
+        <form method="post" enctype="multipart/form-data">
+            <input asp-for="@Model.SelectedArticle.Header" value="@Model.SelectedArticle.Header" /><br />
+            <textarea asp-for="@Model.SelectedArticle.Paragraph" value="@Model.SelectedArticle.Paragraph" id="mytextarea"></textarea><br />
+            <input asp-for="@Model.SelectedArticle.Id" value="@Model.SelectedArticle.Id" hidden />
+            <input asp-for="@Model.SelectedArticle.PageId" value="@Model.SelectedArticle.PageId" hidden />
+            <input asp-for="@Model.SelectedArticle.TimeStamp" value="@Model.SelectedArticle.TimeStamp" hidden />
+            Artikel Ordning: <input asp-for="@Model.SelectedArticle.Order" value="@Model.SelectedArticle.Order" /><br />
+            Publicerad: <input asp-for="@Model.SelectedArticle.Published" /><br />
+            <br />
+            <h3>Styling</h3>
+            <div>
+                <select asp-for="@Model.SelectedArticle.HeaderFont">
+                    <option value="">Typsnitt</option>
+                    <option value="Andale Mono">Andale Mono</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Arial Black">Arial Black</option>
+                    <option value="Book Antiqua">Book Antiqua</option>
+                    <option value="Comic Sans MS">Comic Sans MS</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Impact">Impact</option>
+                    <option value="Symbol">Symbol</option>
+                    <option value="Tahoma">Tahoma</option>
+                    <option value="Terminal">Terminal</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Trebuchet MS">Trebuchet MS</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Webdings">Webdings</option>
+                    <option value="Wingdings">Wingdings</option>
+                </select>
+            </div>
+            <div>
+                <select asp-for="@Model.SelectedArticle.BorderType">
+                    <option value="">Gräns typ</option>
+                    <option value="Full">Full</option>
+                    <option value="Dashed">Dashed</option>
+                    <option value="Dotted">Dotted</option>
+                    <option value="Double">Double</option>
+                    <option value="Groove">Groove</option>
+                    <option value="Ridge">Ridge</option>
+                </select>
+            </div>
+            <div>
+                Inramning färg :
+                <input type="color" onchange="changeColor(this.value)" value="@Model.SelectedArticle.BorderColor" asp-for="@Model.SelectedArticle.BorderColor" />
+            </div>
+            <div>
+                Bakgrunds färg:
+                <input type="color" onchange="changeColor(this.value)" value="@Model.SelectedArticle.BgColor" asp-for="@Model.SelectedArticle.BgColor" />
+            </div>
+
+            <div>
+                <select asp-for="@Model.SelectedArticle.LinkType" value="@Model.SelectedArticle.LinkType">
+                    <option value="">linktype</option>
+                    <option value="btn btn-primary">button</option>
+                    <option value="btn btn-danger">button2</option>
+                </select>
+            </div>
+            <div>
+                Bild bredd:
+                <select asp-for="@Model.SelectedArticle.ImgWidth" value="@Model.SelectedArticle.ImgWidth">
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="75">75</option>
+                    <option value="100">100</option>
+                </select>
+
+            </div><br />
+            <button type="submit" asp-page-handler="EditArticle">Edit</button><br />
+        </form>
+        <hr />
+    </div>
+    <div class="row">
+        <div class="text-center">
+            <h3>Lägg till bild </h3>
             <form method="post" enctype="multipart/form-data">
-                <input asp-for="@Model.SelectedArticle.Header" value="@Model.SelectedArticle.Header" /><br />
-                <textarea asp-for="@Model.SelectedArticle.Paragraph" value="@Model.SelectedArticle.Paragraph" id="mytextarea"></textarea><br />
-                <input asp-for="@Model.SelectedArticle.Id" value="@Model.SelectedArticle.Id" hidden />
-                <input asp-for="@Model.SelectedArticle.PageId" value="@Model.SelectedArticle.PageId" hidden />
-                <input asp-for="@Model.SelectedArticle.TimeStamp" value="@Model.SelectedArticle.TimeStamp" hidden />
-                Artikel Ordning: <input asp-for="@Model.SelectedArticle.Order" value="@Model.SelectedArticle.Order" /><br />
-                Publicerad: <input asp-for="@Model.SelectedArticle.Published" /><br />
-                <br />
-                <h3>Styling</h3>
+                <input asp-for="@Model.ArticleImageID" value="@Model.SelectedArticle.Id" hidden /><br />
+                <span id="b">
+                    <input type="file" id="file1" name="file1" />
+                </span><br />
+                <span>
+                    <button type="submit" class="btn btn-success" asp-page-handler="PostImage">Ladda upp fil</button>
+                </span>
+            </form>
+        </div>
+        <div>
+            <h3>Lägg till länk</h3>
+            <form method="post">
+                <input asp-for="@Model.createdLink.ArticleId" value="@Model.SelectedArticle.Id" hidden />
+                Länkadress: <input asp-for="@Model.createdLink.LinkString" /><br />
+                Video/Plugin: <input asp-for="@Model.createdLink.Video" /><br />
+                <button type="submit" asp-page-handler="AddLink">Add Link</button>
+            </form>
+        </div>
+    </div>
+    <hr />
+
+    <div>
+        <br /><hr /><br />
+        <h3>Bifogade bilder och dokument</h3>
+        @foreach (var x in Model.Articles)
+            {
+                if (x.Id == Model.SelectedArticle.Id)
+                {
+        <div class="row">
+            @foreach (var y in Model.imgList)
+                        {
+            @if (y.ArticleID == x.Id)
+                            {
+            <div>
+                <form method="post">
+                    <input asp-for="DeleteImageID" value="@y.imgID" hidden />
+                    <img src="@y.Data" />
+                    <div class="text-center">
+                        <button type="submit" asp-page-handler="DeleteImage">Delete</button>
+                    </div>
+
+                </form>
+            </div>
+                            }
+                        }
+        </div>
+        <br />
+        <div class="row">
+            @foreach (var y in Model.pdfList)
+                        {
+            @if (y.ArticleID == x.Id)
+                            {
+            <div>
+                <form method="post">
+                    <input asp-for="DeleteImageID" value="@y.ID" hidden />
+                    <img src="https://clipartart.com/images/document-clipart-icon-5.jpg" width="30" height="30" /><br /> @y.Title<br />
+                    <button type="submit" asp-page-handler="DeleteImage">Delete</button>
+                </form>
+            </div>
+                            }
+                        }
+        </div>
+
+                }
+            }
+    </div>
+    <div class="border">
+        <br /><hr /><br />
+        <h3>Bifogade länkar</h3>
+        <div class="row">
+
+
+            @foreach (var x in Model.Articles)
+                {
+                    if (x.Id == Model.SelectedArticle.Id)
+                    {
+
+            @foreach (var y in Model.LinkList2)
+                        {
+            <br />
+                            if (y.ArticleId == x.Id)
+                            {
+                                if (y.Video)
+                                {
+            <form method="post">
+                <input asp-for="DeleteLinkID" value="@y.Id" hidden />
+                <iframe width="370" height="210" src="@y.LinkString" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br />
+                <button type="submit" asp-page-handler="DeleteLink">Delete Link</button><br /><br />
+            </form>
+                                }
+                                else
+                                {
+            <form method="post">
+                <input asp-for="DeleteLinkID" value="@y.Id" hidden />
+                <a href="@y.LinkString">@y.LinkString</a><br />
+                <button type="submit" asp-page-handler="DeleteLink">Delete Link</button><br /><br />
+            </form>
+                                }
+                            }
+                        }
+
+                    }
+                }
+        </div>
+    </div>
+    <hr />
+    }
+    else
+    {
+    @if (Model.isAdmin)
+        {
+    <div class="text-center border">
+        <div>Skapa sida</div>
+        <div>
+            <form method="post">
+                <input type="text" asp-for="@Model.newCreatedPage.Title" placeholder="new page name" />
+                <button type="submit" asp-page-handler="NewPage">create new page</button>
+            </form>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        @if (Model.CurrentPage != null)
+                {
+        <div class="border">
+            <h3>Ändra sidinformation</h3>
+            <form method="post">
+                <input type="hidden" asp-for="@Model.CurrentPage.Id" value="@Model.CurrentPage.Id" />
+                Sidnamn: <input asp-for="@Model.CurrentPage.Title" value="@Model.CurrentPage.Title" /><br />
+                Topp kolumn: <input asp-for="CurrentPage.Header" /> <br>
+                Höger kolumn: <input asp-for="CurrentPage.Right" /> <br>
+                Botten kolumn på/av: <input asp-for="@Model.CurrentPage.Footer" /> <br />
+                Sidordning: <input asp-for="@Model.CurrentPage.Order" value="@Model.CurrentPage.Order" /><br />
+                <input type="hidden" asp-for="@Model.CurrentPage.TimeStamp" value="@Model.CurrentPage.TimeStamp" />
+                Botten kolumn text: <input asp-for="@Model.CurrentPage.FooterString" value="@Model.CurrentPage.FooterString" /><br />
+
+                <input value="@Model.CurrentPage.FontMain" asp-for="@Model.CurrentPage.FontMain" hidden>
+                <input value="@Model.CurrentPage.BgColor" asp-for="@Model.CurrentPage.BgColor" hidden />
+                <input asp-for="@Model.CurrentPage.BorderColor" value="@Model.CurrentPage.BorderColor" hidden />
+                <input asp-for="@Model.CurrentPage.BorderType" value="@Model.CurrentPage.BorderType" hidden />
+
+                <input value="@Model.CurrentPage.FontHeader" asp-for="@Model.CurrentPage.FontHeader" hidden />
+                <input value="@Model.CurrentPage.ColorHeader" asp-for="@Model.CurrentPage.ColorHeader" hidden />
+                <input asp-for="@Model.CurrentPage.BorderColorHeader" value="@Model.CurrentPage.BorderColorHeader" hidden />
+                <input asp-for="@Model.CurrentPage.BorderTypeHeader" value="@Model.CurrentPage.BorderTypeHeader" hidden />
+
+                <input value="@Model.CurrentPage.FontLeftbar" asp-for="@Model.CurrentPage.FontLeftbar" hidden />
+                <input value="@Model.CurrentPage.ColorLeftbar" asp-for="@Model.CurrentPage.ColorLeftbar" hidden />
+                <input asp-for="@Model.CurrentPage.BorderColorLeftbar" value="@Model.CurrentPage.BorderColorLeftbar" hidden />
+                <input asp-for="@Model.CurrentPage.BorderTypeLeftbar" value="@Model.CurrentPage.BorderTypeLeftbar" hidden />
+
+                <input value="@Model.CurrentPage.ColorRightbar" asp-for="@Model.CurrentPage.ColorRightbar" hidden />
+                <input asp-for="@Model.CurrentPage.BorderColorRightbar" value="@Model.CurrentPage.BorderColorRightbar" hidden />
+                <input asp-for="@Model.CurrentPage.BorderTypeRightbar" value="@Model.CurrentPage.BorderTypeRightbar" hidden />
+
+                <input value="@Model.CurrentPage.FontFooter" asp-for="@Model.CurrentPage.FontFooter" hidden />
+                <input asp-for="@Model.CurrentPage.ColorFooter" value="@Model.CurrentPage.ColorFooter" hidden />
+                <input asp-for="@Model.CurrentPage.BorderColorFooter" value="@Model.CurrentPage.BorderColorFooter" hidden />
+                <input asp-for="@Model.CurrentPage.BorderTypeFooter" value="@Model.CurrentPage.BorderTypeFooter" hidden />
+
+                <input asp-for="@Model.CurrentPage.Count" value="@Model.CurrentPage.Count" hidden />
+
+                <button type="submit" asp-page-handler="EditPage">Ändra sidinfo</button>
+            </form>
+            <hr />
+        </div>
+        <div class="border">
+            <h3>Sidans Styling</h3>
+            <form method="post">
+                <input type="hidden" asp-for="@Model.CurrentPage.Id" value="@Model.CurrentPage.Id" />
+                <input asp-for="@Model.CurrentPage.Title" value="@Model.CurrentPage.Title" hidden />
+                <input asp-for="CurrentPage.Header" hidden />
+                <input asp-for="CurrentPage.Right" hidden />
+                <input asp-for="@Model.CurrentPage.Footer" hidden />
+                <input asp-for="@Model.CurrentPage.Order" value="@Model.CurrentPage.Order" hidden />
+                <input type="hidden" asp-for="@Model.CurrentPage.TimeStamp" value="@Model.CurrentPage.TimeStamp" hidden />
+                <input asp-for="@Model.CurrentPage.FooterString" value="@Model.CurrentPage.FooterString" hidden />
+                Topp kolumn:<br />
                 <div>
-                    <select asp-for="@Model.SelectedArticle.HeaderFont">
+                    <select value="@Model.CurrentPage.FontHeader" asp-for="@Model.CurrentPage.FontHeader">
                         <option value="">Typsnitt</option>
                         <option value="Andale Mono">Andale Mono</option>
                         <option value="Arial">Arial</option>
@@ -63,7 +316,14 @@
                     </select>
                 </div>
                 <div>
-                    <select asp-for="@Model.SelectedArticle.BorderType">
+                    Topp kolumn färg: <input type="color" value="@Model.CurrentPage.ColorHeader" asp-for="@Model.CurrentPage.ColorHeader" />
+                </div>
+                <div>
+                    Topp kolumn gränsfärg: <input type="color" asp-for="@Model.CurrentPage.BorderColorHeader" value="@Model.CurrentPage.BorderColorHeader" />
+                </div>
+                <div>
+                    Gräns färg
+                    <select asp-for="@Model.CurrentPage.BorderTypeHeader">
                         <option value="">Gräns typ</option>
                         <option value="Full">Full</option>
                         <option value="Dashed">Dashed</option>
@@ -73,630 +333,378 @@
                         <option value="Ridge">Ridge</option>
                     </select>
                 </div>
+                <br />
+                Vänster kolumn:
                 <div>
-                    Inramning färg :
-                    <input type="color" onchange="changeColor(this.value)" value="@Model.SelectedArticle.BorderColor" asp-for="@Model.SelectedArticle.BorderColor" />
-                </div>
-                <div>
-                    Bakgrunds färg:
-                    <input type="color" onchange="changeColor(this.value)" value="@Model.SelectedArticle.BgColor" asp-for="@Model.SelectedArticle.BgColor" />
-                </div>
-
-                <div>
-                    <select asp-for="@Model.SelectedArticle.LinkType" value="@Model.SelectedArticle.LinkType">
-                        <option value="">linktype</option>
-                        <option value="btn btn-primary">button</option>
-                        <option value="btn btn-danger">button2</option>
+                    <select value="@Model.CurrentPage.FontLeftbar" asp-for="@Model.CurrentPage.FontLeftbar">
+                        <option value="">Typsnitt</option>
+                        <option value="Andale Mono">Andale Mono</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Arial Black">Arial Black</option>
+                        <option value="Book Antiqua">Book Antiqua</option>
+                        <option value="Comic Sans MS">Comic Sans MS</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Impact">Impact</option>
+                        <option value="Symbol">Symbol</option>
+                        <option value="Tahoma">Tahoma</option>
+                        <option value="Terminal">Terminal</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Trebuchet MS">Trebuchet MS</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Webdings">Webdings</option>
+                        <option value="Wingdings">Wingdings</option>
                     </select>
                 </div>
                 <div>
-                    Bild bredd:
-                    <select asp-for="@Model.SelectedArticle.ImgWidth" value="@Model.SelectedArticle.ImgWidth">
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="75">75</option>
-                        <option value="100">100</option>
+                    Vänster kolumn färg: <input type="color" asp-for="@Model.CurrentPage.ColorLeftbar" value="@Model.CurrentPage.ColorLeftbar" />
+                </div>
+                <div>
+                    Vänster kolumn gräns färg: <input type="color" asp-for="@Model.CurrentPage.BorderColorLeftbar" value="@Model.CurrentPage.BorderColorLeftbar" />
+                </div>
+                <div>
+                    Vänster kolumn typ:
+                    <select asp-for="@Model.CurrentPage.BorderTypeLeftbar" value="@Model.CurrentPage.BorderTypeLeftbar">
+                        <option value="">Gräns typ</option>
+                        <option value="Full">Full</option>
+                        <option value="Dashed">Dashed</option>
+                        <option value="Dotted">Dotted</option>
+                        <option value="Double">Double</option>
+                        <option value="Groove">Groove</option>
+                        <option value="Ridge">Ridge</option>
                     </select>
-
-                </div><br />
-                <button type="submit" asp-page-handler="EditArticle">Edit</button><br />
+                </div>
+                <br />
+                Kropp:<br />
+                <select value="@Model.CurrentPage.FontMain" asp-for="@Model.CurrentPage.FontMain">
+                    <option value="">Typsnitt</option>
+                    <option value="Andale Mono">Andale Mono</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Arial Black">Arial Black</option>
+                    <option value="Book Antiqua">Book Antiqua</option>
+                    <option value="Comic Sans MS">Comic Sans MS</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Impact">Impact</option>
+                    <option value="Symbol">Symbol</option>
+                    <option value="Tahoma">Tahoma</option>
+                    <option value="Terminal">Terminal</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Trebuchet MS">Trebuchet MS</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Webdings">Webdings</option>
+                    <option value="Wingdings">Wingdings</option>
+                </select>
+                <div>
+                    Kropp färg: <input type="color" asp-for="@Model.CurrentPage.BgColor" value="@Model.CurrentPage.BgColor" />
+                </div>
+                <div>
+                    Kropp gräns färg: <input type="color" asp-for="@Model.CurrentPage.BorderColor" value="@Model.CurrentPage.BorderColor" />
+                </div>
+                <div>
+                    Kropp gräns typ:
+                    <select asp-for="@Model.CurrentPage.BorderType" value="@Model.CurrentPage.BorderType">
+                        <option value="">Gräns typ</option>
+                        <option value="Full">Full</option>
+                        <option value="Dashed">Dashed</option>
+                        <option value="Dotted">Dotted</option>
+                        <option value="Double">Double</option>
+                        <option value="Groove">Groove</option>
+                        <option value="Ridge">Ridge</option>
+                    </select>
+                </div>
+                <br />
+                Höger kolumn: <br />
+                <div>
+                    Höger kolumn färg: <input type="color" asp-for="@Model.CurrentPage.ColorRightbar" value="@Model.CurrentPage.ColorRightbar" />
+                </div>
+                <div>
+                    Höger kolumn gräns färg: <input type="color" asp-for="@Model.CurrentPage.BorderColorRightbar" value="@Model.CurrentPage.BorderColorRightbar" />
+                </div>
+                <div>
+                    Höger kolumn typ:
+                    <select asp-for="@Model.CurrentPage.BorderTypeRightbar" value="@Model.CurrentPage.BorderTypeRightbar">
+                        <option value="">Gräns typ</option>
+                        <option value="Full">Full</option>
+                        <option value="Dashed">Dashed</option>
+                        <option value="Dotted">Dotted</option>
+                        <option value="Double">Double</option>
+                        <option value="Groove">Groove</option>
+                        <option value="Ridge">Ridge</option>
+                    </select>
+                </div>
+                <br />
+                <div>
+                    Botten kolumn:
+                    <select asp-for="@Model.CurrentPage.FontFooter" value="@Model.CurrentPage.FontFooter">
+                        <option value="">Typsnitt</option>
+                        <option value="Andale Mono">Andale Mono</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Arial Black">Arial Black</option>
+                        <option value="Book Antiqua">Book Antiqua</option>
+                        <option value="Comic Sans MS">Comic Sans MS</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Impact">Impact</option>
+                        <option value="Symbol">Symbol</option>
+                        <option value="Tahoma">Tahoma</option>
+                        <option value="Terminal">Terminal</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Trebuchet MS">Trebuchet MS</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Webdings">Webdings</option>
+                        <option value="Wingdings">Wingdings</option>
+                    </select><br />
+                    Botten kolumn färg: <input type="color" asp-for="@Model.CurrentPage.ColorFooter" value="@Model.CurrentPage.ColorFooter" /><br />
+                    Botten kolumn gräns färg: <input type="color" asp-for="@Model.CurrentPage.BorderColorFooter" /><br />
+                    Botten kolumn typ:
+                    <select asp-for="@Model.CurrentPage.BorderTypeFooter" value="@Model.CurrentPage.BorderTypeFooter">
+                        <option value="">Gräns typ</option>
+                        <option value="Full">Full</option>
+                        <option value="Dashed">Dashed</option>
+                        <option value="Dotted">Dotted</option>
+                        <option value="Double">Double</option>
+                        <option value="Groove">Groove</option>
+                        <option value="Ridge">Ridge</option>
+                    </select><br />
+                </div>
+                <input asp-for="@Model.CurrentPage.Count" value="@Model.CurrentPage.Count" hidden />
+                <button type="submit" asp-page-handler="EditPage">Ändra styling</button>
+                <br />
             </form>
-            <hr />
         </div>
-        <div class="row">
-            <div class="text-center">
-                <h3>Lägg till bild </h3>
-                <form method="post" enctype="multipart/form-data">
-                    <input asp-for="@Model.ArticleImageID" value="@Model.SelectedArticle.Id" hidden /><br />
-                    <span id="b">
-                        <input type="file" id="file1" name="file1" />
-                    </span><br />
-                    <span>
-                        <button type="submit" class="btn btn-success" asp-page-handler="PostImage">Ladda upp fil</button>
-                    </span>
+        <div>
+            <div>
+                <form method="post">
+                    Höger kolumn artiklar:<br />
+                    <input asp-for="@Model.newOtherArticle.PageId" value="@Model.CurrentPage.Id" hidden />
+                    Länk adress: <input asp-for="@Model.newOtherArticle.Link" placeholder="link" /><br />
+                    Bild URL: <input asp-for="@Model.newOtherArticle.ImgLink" placeholder="image url" /><br />
+                    Text: <input asp-for="@Model.newOtherArticle.Text" placeholder="text" />
+                    <button type="submit" asp-page-handler="NewOtherArticle">Save Text</button>
+                </form>
+            </div>
+            <br />
+            <br />
+            <br />
+            <div class="border">
+                <h3>Ta bort sida</h3>
+                <form method="post">
+                    <input type="text" asp-for="@Model.PageDeleteID" value="@Model.SelectedPage" hidden />
+                    <button type="submit" asp-page-handler="DeletePage">Ta bort sida</button>
                 </form>
             </div>
             <div>
-                <h3>Lägg till länk</h3>
-                <form method="post">
-                    <input asp-for="@Model.createdLink.ArticleId" value="@Model.SelectedArticle.Id" hidden />
-                    Länkadress: <input asp-for="@Model.createdLink.LinkString" /><br />
-                    Video/Plugin: <input asp-for="@Model.createdLink.Video" /><br />
-                    <button type="submit" asp-page-handler="AddLink">Add Link</button>
-                </form>
-            </div>
-        </div>
-        <hr />
-
-        <div>
-            <br /><hr /><br />
-            <h3>Bifogade bilder och dokument</h3>
-            @foreach (var x in Model.Articles)
-            {
-                if (x.Id == Model.SelectedArticle.Id)
-                {
-                    <div class="row">
-                        @foreach (var y in Model.imgList)
-                        {
-                            @if (y.ArticleID == x.Id)
+                @foreach (var x in Model.OtherArticleList)
                             {
-                                <div>
-                                    <form method="post">
-                                        <input asp-for="DeleteImageID" value="@y.imgID" hidden />
-                                        <img src="@y.Data" />
-                                        <div class="text-center">
-                                            <button type="submit" asp-page-handler="DeleteImage">Delete</button>
-                                        </div>
-
-                                    </form>
-                                </div>
-                            }
-                        }
-                    </div>
-                    <br />
-                    <div class="row">
-                        @foreach (var y in Model.pdfList)
-                        {
-                            @if (y.ArticleID == x.Id)
-                            {
-                                <div>
-                                    <form method="post">
-                                        <input asp-for="DeleteImageID" value="@y.ID" hidden />
-                                        <img src="https://clipartart.com/images/document-clipart-icon-5.jpg" width="30" height="30" /><br /> @y.Title<br />
-                                        <button type="submit" asp-page-handler="DeleteImage">Delete</button>
-                                    </form>
-                                </div>
-                            }
-                        }
-                    </div>
-
-                }
-            }
-        </div>
-        <div class="border">
-            <br /><hr /><br />
-            <h3>Bifogade länkar</h3>
-            <div class="row">
-
-
-                @foreach (var x in Model.Articles)
-                {
-                    if (x.Id == Model.SelectedArticle.Id)
-                    {
-
-                        @foreach (var y in Model.LinkList2)
-                        {
-                            <br />
-                            if (y.ArticleId == x.Id)
-                            {
-                                if (y.Video)
-                                {
-                                    <form method="post">
-                                        <input asp-for="DeleteLinkID" value="@y.Id" hidden />
-                                        <iframe width="370" height="210" src="@y.LinkString" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br />
-                                        <button type="submit" asp-page-handler="DeleteLink">Delete Link</button><br /><br />
-                                    </form>
-                                }
-                                else
-                                {
-                                    <form method="post">
-                                        <input asp-for="DeleteLinkID" value="@y.Id" hidden />
-                                        <a href="@y.LinkString">@y.LinkString</a><br />
-                                        <button type="submit" asp-page-handler="DeleteLink">Delete Link</button><br /><br />
-                                    </form>
-                                }
-                            }
-                        }
-
-                    }
-                }
-            </div>
-        </div>
-        <hr />
-    }
-    else
-    {
-        @if (Model.isAdmin)
-        {
-            <div class="text-center border">
-                <div>Skapa sida</div>
                 <div>
                     <form method="post">
-                        <input type="text" asp-for="@Model.newCreatedPage.Title" placeholder="new page name" />
-                        <button type="submit" asp-page-handler="NewPage">create new page</button>
+                        <input asp-for="OaDeleteID" value="@x.Id" hidden />
+                        <img src="@x.ImgLink" width="200" height="200" />
+                        <div>@x.Text</div>
+                        <button type="submit" asp-page-handler="DeleteOA">Ta bort</button>
                     </form>
                 </div>
-            </div>
-            <hr />
-            <div class="row">
-                @if (Model.CurrentPage != null)
-                {
-                    <div class="border">
-                        <h3>Ändra sidinformation</h3>
-                        <form method="post">
-                            <input type="hidden" asp-for="@Model.CurrentPage.Id" value="@Model.CurrentPage.Id" />
-                            Sidnamn: <input asp-for="@Model.CurrentPage.Title" value="@Model.CurrentPage.Title" /><br />
-                            Topp kolumn: <input asp-for="CurrentPage.Header" /> <br>
-                            Höger kolumn: <input asp-for="CurrentPage.Right" /> <br>
-                            Botten kolumn på/av: <input asp-for="@Model.CurrentPage.Footer" /> <br />
-                            Sidordning: <input asp-for="@Model.CurrentPage.Order" value="@Model.CurrentPage.Order" /><br />
-                            <input type="hidden" asp-for="@Model.CurrentPage.TimeStamp" value="@Model.CurrentPage.TimeStamp" />
-                            Botten kolumn text: <input asp-for="@Model.CurrentPage.FooterString" value="@Model.CurrentPage.FooterString" /><br />
-
-                            <input value="@Model.CurrentPage.FontMain" asp-for="@Model.CurrentPage.FontMain" hidden>
-                            <input value="@Model.CurrentPage.BgColor" asp-for="@Model.CurrentPage.BgColor" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderColor" value="@Model.CurrentPage.BorderColor" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderType" value="@Model.CurrentPage.BorderType" hidden />
-
-                            <input value="@Model.CurrentPage.FontHeader" asp-for="@Model.CurrentPage.FontHeader" hidden />
-                            <input value="@Model.CurrentPage.ColorHeader" asp-for="@Model.CurrentPage.ColorHeader" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderColorHeader" value="@Model.CurrentPage.BorderColorHeader" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderTypeHeader" value="@Model.CurrentPage.BorderTypeHeader" hidden />
-
-                            <input value="@Model.CurrentPage.FontLeftbar" asp-for="@Model.CurrentPage.FontLeftbar" hidden />
-                            <input value="@Model.CurrentPage.ColorLeftbar" asp-for="@Model.CurrentPage.ColorLeftbar" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderColorLeftbar" value="@Model.CurrentPage.BorderColorLeftbar" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderTypeLeftbar" value="@Model.CurrentPage.BorderTypeLeftbar" hidden />
-
-                            <input value="@Model.CurrentPage.ColorRightbar" asp-for="@Model.CurrentPage.ColorRightbar" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderColorRightbar" value="@Model.CurrentPage.BorderColorRightbar" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderTypeRightbar" value="@Model.CurrentPage.BorderTypeRightbar" hidden />
-
-                            <input value="@Model.CurrentPage.FontFooter" asp-for="@Model.CurrentPage.FontFooter" hidden />
-                            <input asp-for="@Model.CurrentPage.ColorFooter" value="@Model.CurrentPage.ColorFooter" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderColorFooter" value="@Model.CurrentPage.BorderColorFooter" hidden />
-                            <input asp-for="@Model.CurrentPage.BorderTypeFooter" value="@Model.CurrentPage.BorderTypeFooter" hidden />
-
-                            <input asp-for="@Model.CurrentPage.Count" value="@Model.CurrentPage.Count" hidden />
-
-                            <button type="submit" asp-page-handler="EditPage">Ändra sidinfo</button>
-                        </form>
-                        <hr />
-                    </div>
-                    <div class="border">
-                        <h3>Sidans Styling</h3>
-                        <form method="post">
-                            <input type="hidden" asp-for="@Model.CurrentPage.Id" value="@Model.CurrentPage.Id" />
-                            <input asp-for="@Model.CurrentPage.Title" value="@Model.CurrentPage.Title" hidden />
-                            <input asp-for="CurrentPage.Header" hidden />
-                            <input asp-for="CurrentPage.Right" hidden />
-                            <input asp-for="@Model.CurrentPage.Footer" hidden />
-                            <input asp-for="@Model.CurrentPage.Order" value="@Model.CurrentPage.Order" hidden />
-                            <input type="hidden" asp-for="@Model.CurrentPage.TimeStamp" value="@Model.CurrentPage.TimeStamp" hidden />
-                            <input asp-for="@Model.CurrentPage.FooterString" value="@Model.CurrentPage.FooterString" hidden />
-                            Topp kolumn:<br />
-                            <div>
-                                <select value="@Model.CurrentPage.FontHeader" asp-for="@Model.CurrentPage.FontHeader">
-                                    <option value="">Typsnitt</option>
-                                    <option value="Andale Mono">Andale Mono</option>
-                                    <option value="Arial">Arial</option>
-                                    <option value="Arial Black">Arial Black</option>
-                                    <option value="Book Antiqua">Book Antiqua</option>
-                                    <option value="Comic Sans MS">Comic Sans MS</option>
-                                    <option value="Courier New">Courier New</option>
-                                    <option value="Georgia">Georgia</option>
-                                    <option value="Helvetica">Helvetica</option>
-                                    <option value="Impact">Impact</option>
-                                    <option value="Symbol">Symbol</option>
-                                    <option value="Tahoma">Tahoma</option>
-                                    <option value="Terminal">Terminal</option>
-                                    <option value="Times New Roman">Times New Roman</option>
-                                    <option value="Trebuchet MS">Trebuchet MS</option>
-                                    <option value="Verdana">Verdana</option>
-                                    <option value="Webdings">Webdings</option>
-                                    <option value="Wingdings">Wingdings</option>
-                                </select>
-                            </div>
-                            <div>
-                                Topp kolumn färg: <input type="color" value="@Model.CurrentPage.ColorHeader" asp-for="@Model.CurrentPage.ColorHeader" />
-                            </div>
-                            <div>
-                                Topp kolumn gränsfärg: <input type="color" asp-for="@Model.CurrentPage.BorderColorHeader" value="@Model.CurrentPage.BorderColorHeader" />
-                            </div>
-                            <div>
-                                Gräns färg
-                                <select asp-for="@Model.CurrentPage.BorderTypeHeader">
-                                    <option value="">Gräns typ</option>
-                                    <option value="Full">Full</option>
-                                    <option value="Dashed">Dashed</option>
-                                    <option value="Dotted">Dotted</option>
-                                    <option value="Double">Double</option>
-                                    <option value="Groove">Groove</option>
-                                    <option value="Ridge">Ridge</option>
-                                </select>
-                            </div>
-                            <br />
-                            Vänster kolumn:
-                            <div>
-                                <select value="@Model.CurrentPage.FontLeftbar" asp-for="@Model.CurrentPage.FontLeftbar">
-                                    <option value="">Typsnitt</option>
-                                    <option value="Andale Mono">Andale Mono</option>
-                                    <option value="Arial">Arial</option>
-                                    <option value="Arial Black">Arial Black</option>
-                                    <option value="Book Antiqua">Book Antiqua</option>
-                                    <option value="Comic Sans MS">Comic Sans MS</option>
-                                    <option value="Courier New">Courier New</option>
-                                    <option value="Georgia">Georgia</option>
-                                    <option value="Helvetica">Helvetica</option>
-                                    <option value="Impact">Impact</option>
-                                    <option value="Symbol">Symbol</option>
-                                    <option value="Tahoma">Tahoma</option>
-                                    <option value="Terminal">Terminal</option>
-                                    <option value="Times New Roman">Times New Roman</option>
-                                    <option value="Trebuchet MS">Trebuchet MS</option>
-                                    <option value="Verdana">Verdana</option>
-                                    <option value="Webdings">Webdings</option>
-                                    <option value="Wingdings">Wingdings</option>
-                                </select>
-                            </div>
-                            <div>
-                                Vänster kolumn färg: <input type="color" asp-for="@Model.CurrentPage.ColorLeftbar" value="@Model.CurrentPage.ColorLeftbar" />
-                            </div>
-                            <div>
-                                Vänster kolumn gräns färg: <input type="color" asp-for="@Model.CurrentPage.BorderColorLeftbar" value="@Model.CurrentPage.BorderColorLeftbar" />
-                            </div>
-                            <div>
-                                Vänster kolumn typ:
-                                <select asp-for="@Model.CurrentPage.BorderTypeLeftbar" value="@Model.CurrentPage.BorderTypeLeftbar">
-                                    <option value="">Gräns typ</option>
-                                    <option value="Full">Full</option>
-                                    <option value="Dashed">Dashed</option>
-                                    <option value="Dotted">Dotted</option>
-                                    <option value="Double">Double</option>
-                                    <option value="Groove">Groove</option>
-                                    <option value="Ridge">Ridge</option>
-                                </select>
-                            </div>
-                            <br />
-                            Kropp:<br />
-                            <select value="@Model.CurrentPage.FontMain" asp-for="@Model.CurrentPage.FontMain">
-                                <option value="">Typsnitt</option>
-                                <option value="Andale Mono">Andale Mono</option>
-                                <option value="Arial">Arial</option>
-                                <option value="Arial Black">Arial Black</option>
-                                <option value="Book Antiqua">Book Antiqua</option>
-                                <option value="Comic Sans MS">Comic Sans MS</option>
-                                <option value="Courier New">Courier New</option>
-                                <option value="Georgia">Georgia</option>
-                                <option value="Helvetica">Helvetica</option>
-                                <option value="Impact">Impact</option>
-                                <option value="Symbol">Symbol</option>
-                                <option value="Tahoma">Tahoma</option>
-                                <option value="Terminal">Terminal</option>
-                                <option value="Times New Roman">Times New Roman</option>
-                                <option value="Trebuchet MS">Trebuchet MS</option>
-                                <option value="Verdana">Verdana</option>
-                                <option value="Webdings">Webdings</option>
-                                <option value="Wingdings">Wingdings</option>
-                            </select>
-                            <div>
-                                Kropp färg: <input type="color" asp-for="@Model.CurrentPage.BgColor" value="@Model.CurrentPage.BgColor" />
-                            </div>
-                            <div>
-                                Kropp gräns färg: <input type="color" asp-for="@Model.CurrentPage.BorderColor" value="@Model.CurrentPage.BorderColor" />
-                            </div>
-                            <div>
-                                Kropp gräns typ:
-                                <select asp-for="@Model.CurrentPage.BorderType" value="@Model.CurrentPage.BorderType">
-                                    <option value="">Gräns typ</option>
-                                    <option value="Full">Full</option>
-                                    <option value="Dashed">Dashed</option>
-                                    <option value="Dotted">Dotted</option>
-                                    <option value="Double">Double</option>
-                                    <option value="Groove">Groove</option>
-                                    <option value="Ridge">Ridge</option>
-                                </select>
-                            </div>
-                            <br />
-                            Höger kolumn: <br />
-                            <div>
-                                Höger kolumn färg: <input type="color" asp-for="@Model.CurrentPage.ColorRightbar" value="@Model.CurrentPage.ColorRightbar" />
-                            </div>
-                            <div>
-                                Höger kolumn gräns färg: <input type="color" asp-for="@Model.CurrentPage.BorderColorRightbar" value="@Model.CurrentPage.BorderColorRightbar" />
-                            </div>
-                            <div>
-                                Höger kolumn typ:
-                                <select asp-for="@Model.CurrentPage.BorderTypeRightbar" value="@Model.CurrentPage.BorderTypeRightbar">
-                                    <option value="">Gräns typ</option>
-                                    <option value="Full">Full</option>
-                                    <option value="Dashed">Dashed</option>
-                                    <option value="Dotted">Dotted</option>
-                                    <option value="Double">Double</option>
-                                    <option value="Groove">Groove</option>
-                                    <option value="Ridge">Ridge</option>
-                                </select>
-                            </div>
-                            <br />
-                            <div>
-                                Botten kolumn:
-                                <select asp-for="@Model.CurrentPage.FontFooter" value="@Model.CurrentPage.FontFooter">
-                                    <option value="">Typsnitt</option>
-                                    <option value="Andale Mono">Andale Mono</option>
-                                    <option value="Arial">Arial</option>
-                                    <option value="Arial Black">Arial Black</option>
-                                    <option value="Book Antiqua">Book Antiqua</option>
-                                    <option value="Comic Sans MS">Comic Sans MS</option>
-                                    <option value="Courier New">Courier New</option>
-                                    <option value="Georgia">Georgia</option>
-                                    <option value="Helvetica">Helvetica</option>
-                                    <option value="Impact">Impact</option>
-                                    <option value="Symbol">Symbol</option>
-                                    <option value="Tahoma">Tahoma</option>
-                                    <option value="Terminal">Terminal</option>
-                                    <option value="Times New Roman">Times New Roman</option>
-                                    <option value="Trebuchet MS">Trebuchet MS</option>
-                                    <option value="Verdana">Verdana</option>
-                                    <option value="Webdings">Webdings</option>
-                                    <option value="Wingdings">Wingdings</option>
-                                </select><br />
-                                Botten kolumn färg: <input type="color" asp-for="@Model.CurrentPage.ColorFooter" value="@Model.CurrentPage.ColorFooter" /><br />
-                                Botten kolumn gräns färg: <input type="color" asp-for="@Model.CurrentPage.BorderColorFooter" /><br />
-                                Botten kolumn typ:
-                                <select asp-for="@Model.CurrentPage.BorderTypeFooter" value="@Model.CurrentPage.BorderTypeFooter">
-                                    <option value="">Gräns typ</option>
-                                    <option value="Full">Full</option>
-                                    <option value="Dashed">Dashed</option>
-                                    <option value="Dotted">Dotted</option>
-                                    <option value="Double">Double</option>
-                                    <option value="Groove">Groove</option>
-                                    <option value="Ridge">Ridge</option>
-                                </select><br />
-                            </div>
-                            <input asp-for="@Model.CurrentPage.Count" value="@Model.CurrentPage.Count" hidden />
-                            <button type="submit" asp-page-handler="EditPage">Ändra styling</button>
-                            <br />
-                        </form>
-                    </div>
-                    <div>
-                        <div>
-                            <form method="post">
-                                Höger kolumn artiklar:<br />
-                                <input asp-for="@Model.newOtherArticle.PageId" value="@Model.CurrentPage.Id" hidden />
-                                Länk adress: <input asp-for="@Model.newOtherArticle.Link" placeholder="link" /><br />
-                                Bild URL: <input asp-for="@Model.newOtherArticle.ImgLink" placeholder="image url" /><br />
-                                Text: <input asp-for="@Model.newOtherArticle.Text" placeholder="text" />
-                                <button type="submit" asp-page-handler="NewOtherArticle">Save Text</button>
-                            </form>
-                        </div>
-                        <br />
-                        <br />
-                        <br />
-                        <div class="border">
-                            <h3>Ta bort sida</h3>
-                            <form method="post">
-                                <input type="text" asp-for="@Model.PageDeleteID" value="@Model.SelectedPage" hidden />
-                                <button type="submit" asp-page-handler="DeletePage">Ta bort sida</button>
-                            </form>
-                        </div>
-                        <div>
-                            @foreach (var x in Model.OtherArticleList)
-                            {
-                                <div>
-                                    <form method="post">
-                                        <input asp-for="OaDeleteID" value="@x.Id" hidden />
-                                        <img src="@x.ImgLink" width="200" height="200" />
-                                        <div>@x.Text</div>
-                                        <button type="submit" asp-page-handler="DeleteOA">Ta bort</button>
-                                    </form>
-                                </div>
                             }
-                        </div>
-                    </div>
+            </div>
+        </div>
                 }
-            </div>
+    </div>
         }
-        @if (Model.isSkribent || Model.isAdmin)
+    @if (Model.isSkribent || Model.isAdmin)
         {
-            <hr />
-            <div class="text-center">Create Article</div>
-            <div class="text-center">
-                <form method="post">
-                    <input type="text" asp-for="@Model.NewArticle.PageId" value="@Model.CurrentPage.Id" hidden />
-                    <input type="text" asp-for="@Model.NewArticle.Header" placeholder="header" /><br />
-                    <input type="text" asp-for="@Model.NewArticle.Paragraph" placeholder="paragraph" /><br />
-                    <button type="submit" asp-page-handler="NewArticle">Skapa artikel</button><br />
-                </form>
-                <hr />
-            </div>
-            <br />
-            <hr />
+    <hr />
+    <div class="text-center">Create Article</div>
+    <div class="text-center">
+        <form method="post">
+            <input type="text" asp-for="@Model.NewArticle.PageId" value="@Model.CurrentPage.Id" hidden />
+            <input type="text" asp-for="@Model.NewArticle.Header" placeholder="header" /><br />
+            <input type="text" asp-for="@Model.NewArticle.Paragraph" placeholder="paragraph" /><br />
+            <button type="submit" asp-page-handler="NewArticle">Skapa artikel</button><br />
+        </form>
+        <hr />
+    </div>
+    <br />
+    <hr />
         }
 
-        @if (Model.CurrentPage != null)
+    @if (Model.CurrentPage != null)
         {
-            @if (Model.CurrentPage.Header)
+    @if (Model.CurrentPage.Header)
             {
-                <span style="background-color: @Model.CurrentPage.ColorHeader; border-color: @Model.CurrentPage.BorderColor; border-style: @Model.CurrentPage.BorderTypeHeader; border-width: thick;"
-                      class="row">
-                    @foreach (var x in Model.cPages)
+    <span style="background-color: @Model.CurrentPage.ColorHeader; border-color: @Model.CurrentPage.BorderColor; border-style: @Model.CurrentPage.BorderTypeHeader; border-width: thick;"
+          class="row">
+        @foreach (var x in Model.cPages)
                     {
-                        <a class="pl-sm-4 pt-sm-2" href="?SelectedPage=@x.Title"> <Font face="@Model.CurrentPage.FontHeader">@x.Title </Font></a>
+        <a class="pl-sm-4 pt-sm-2" href="?SelectedPage=@x.Title"> <Font face="@Model.CurrentPage.FontHeader">@x.Title </Font></a>
                     }
-                    <a class="nav-link text-dark" asp-area="" asp-page="/VårIntegritetsPolicy"><Font face="@Model.CurrentPage.FontHeader">Integritets Policy</Font></a>
-                    <span class="pl-sm-3 pt-sm-2 pr-sm-4"><Font face="@Model.CurrentPage.FontHeader">Besökare: @Model.CurrentPage.Count</Font></span>
-                    <partial name="_LoginPartial" />
-                </span>
+        <a class="nav-link text-dark" asp-area="" asp-page="/VårIntegritetsPolicy"><Font face="@Model.CurrentPage.FontHeader">Integritets Policy</Font></a>
+        <span class="pl-sm-3 pt-sm-2 pr-sm-4"><Font face="@Model.CurrentPage.FontHeader">Besökare: @Model.CurrentPage.Count</Font></span>
+        <partial name="_LoginPartial" />
+    </span>
             }
 
         }
 
 
-        <div class="row">
+    <div class="row">
+        @if (Model.CurrentPage != null)
+            {
+        @if (Model.CurrentPage.Header == false)
+                {
+
+        <div style="background-color: @Model.CurrentPage.ColorLeftbar; border-color: @Model.CurrentPage.BorderColorLeftbar; border-style: @Model.CurrentPage.BorderTypeLeftbar; border-width: thick;"
+             class="leftbar">
+            <ul>
+                @foreach (var x in Model.cPages)
+                            {
+                <li><a href="?SelectedPage=@x.Title"><Font face="@Model.CurrentPage.FontLeftbar">@x.Title </Font></a></li>
+                            }
+                <li><a class="nav-link text-dark" asp-area="" asp-page="/VårIntegritetsPolicy"><Font face="@Model.CurrentPage.FontLeftbar">Integritets Policy</Font></a></li>
+                <li><partial name="_LoginPartial" /></li>
+                <li><Font face="@Model.CurrentPage.FontLeftbar">Besökare: @Model.CurrentPage.Count</Font></li>
+            </ul>
+        </div>
+
+                }
+            }
+
+
+        <div style="background-color: @Model.CurrentPage.BgColor; border-style: @Model.CurrentPage.BorderType;
+            border-width: thick; border-color: @Model.CurrentPage.BorderColor;" class="mainbar text-center">
+            <br />
+            <br />
             @if (Model.CurrentPage != null)
             {
-                @if (Model.CurrentPage.Header == false)
-                {
-
-                    <div style="background-color: @Model.CurrentPage.ColorLeftbar; border-color: @Model.CurrentPage.BorderColorLeftbar; border-style: @Model.CurrentPage.BorderTypeLeftbar; border-width: thick;"
-                         class="leftbar">
-                        <ul>
-                            @foreach (var x in Model.cPages)
-                            {
-                                <li><a href="?SelectedPage=@x.Title"><Font face="@Model.CurrentPage.FontLeftbar">@x.Title </Font></a></li>
-                            }
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="/VårIntegritetsPolicy"><Font face="@Model.CurrentPage.FontLeftbar">Integritets Policy</Font></a></li>
-                            <li><partial name="_LoginPartial" /></li>
-                            <li><Font face="@Model.CurrentPage.FontLeftbar">Besökare: @Model.CurrentPage.Count</Font></li>
-                        </ul>
-                    </div>
-
-                }
+            <h1><Font face="@Model.CurrentPage.FontMain">@Model.CurrentPage.Title</Font></h1><br />
             }
 
+            @foreach (var x in Model.Articles)
+            {
 
-            <div style="background-color: @Model.CurrentPage.BgColor; border-style: @Model.CurrentPage.BorderType;
-            border-width: thick; border-color: @Model.CurrentPage.BorderColor;" class="mainbar text-center">
-                <br />
-                <br />
-                @if (Model.CurrentPage != null)
+
+            @if (Model.isSkribent || Model.isAdmin || x.Published)
                 {
-                    <h1><Font face="@Model.CurrentPage.FontMain">@Model.CurrentPage.Title</Font></h1><br />
-                }
-
-                @foreach (var x in Model.Articles)
-                {
-
-
-                    @if (Model.isSkribent || Model.isAdmin || x.Published)
+                    if (x.PageId == Model.CurrentPage.Id)
                     {
-                        if (x.PageId == Model.CurrentPage.Id)
-                        {
-                            <div style="background-color: @x.BgColor; border-color: @x.BorderColor; border-style: @x.BorderType;">
-                                <h3><Font face="@x.HeaderFont">@x.Header</Font></h3>
-                                @Html.Raw(x.Paragraph)
-                            </div>
-                        }
+            <div style="background-color: @x.BgColor; border-color: @x.BorderColor; border-style: @x.BorderType;">
+                <h3><Font face="@x.HeaderFont">@x.Header</Font></h3>
+                @Html.Raw(x.Paragraph)
+            </div>
+                    }
 
 
-                        <br />
-                        <div id="carouselExampleSlidesOnly" class="carousel slide" data-interval="1500" data-ride="carousel">
-                            <div class="carousel-inner w-@x.ImgWidth">
+            <br />
+            <div id="carouselExampleSlidesOnly" class="carousel slide" data-interval="1500" data-ride="carousel">
+                <div class="carousel-inner w-@x.ImgWidth">
 
-                                @foreach (var y in Model.imgList)
-                                {
-                                    @if (y.ArticleID == x.Id)
-                                    {
-                                        @if (y.First)
-                                        {
-                                            <div class="carousel-item active w-20">
-                                                <img src="@y.Data" class="w-50" alt="...">
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="carousel-item ">
-                                                <img src="@y.Data" class="w-50" alt="...">
-                                            </div>
-                                        }
-                                    }
-                                }
-
-                            </div>
-                        </div>
-                        <br />
-                        <div>
-                            @foreach (var y in Model.LinkList)
+                    @foreach (var y in Model.imgList)
                             {
-                                @if (y.ArticleId == x.Id)
+                    @if (y.ArticleID == x.Id)
                                 {
-                                    @if (y.Video)
+                    @if (y.First)
                                     {
-                                        <br /><iframe width="361" height="205" src="@y.LinkString" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br />
+                    <div class="carousel-item active w-20">
+                        <img src="@y.Data" class="w-50" alt="...">
+                    </div>
                                     }
                                     else
                                     {
-                                        <Font face="@x.HeaderFont"><a class="@x.LinkType" href="@y.LinkString">@y.LinkString</a></Font><br />
+                    <div class="carousel-item ">
+                        <img src="@y.Data" class="w-50" alt="...">
+                    </div>
                                     }
                                 }
                             }
 
-                            @foreach (var y in Model.apiClassList)
-                            {
-                                if (y.ArticleID == x.Id)
-                                {
-                                    @foreach (var z in y.ApiStringList)
-                                    {
-                                        <div><Font face="@x.HeaderFont">@z</Font></div>
-                                    }
-                                    <img src="@y.imgString" width="200" />
-                                }
-                            }
-                        </div>
-                        <br />
-                        <div>
-                            @if (Model.pdfList.Count > 0)
-                            {
-                                <h6><Font face="@x.HeaderFont">Bifogade dokument</Font></h6>
-                                @foreach (var y in Model.pdfList)
-                                {
-                                    @if (y.ArticleID == x.Id)
-                                    {
-                                        <form method="post">
-                                            <input asp-for="@Model.pdfID" value="@y.ID" hidden />
-                                            <Font face="@x.HeaderFont">@y.Title</Font> <button asp-page-handler="DownloadDoc" type="submit"><Font face="@x.HeaderFont">Ladda ned dokument</Font></button>
-                                        </form>
-                                    }
-                                }
-                            }
-
-                        </div>
-                        @if (Model.isSkribent || Model.isAdmin)
-                        {
-                            <br />
-                            <div>
-                                <a href="?ArticleID=@x.Id"><Font face="@x.HeaderFont">Ändra artikel</Font></a>
-                            </div>
-                            <br />
-                        }
-                    }
-                <div><Font face="@x.HeaderFont">Artikel skapad/ senast ändrad @x.TimeStamp</Font></div>
-                }
-
-                <!--Höger Kolumn-->
+                </div>
             </div>
-            @if (Model.CurrentPage != null && Model.CurrentPage.Right)
-            {
-                <div style="background-color: @Model.CurrentPage.ColorRightbar; border-color: @Model.CurrentPage.BorderColorRightbar; border-style: @Model.CurrentPage.BorderTypeRightbar; border-width: thick;"
-                     class="rightbar">
-                    @foreach (var x in Model.OtherArticleList)
+            <br />
+            <div>
+                @foreach (var y in Model.LinkList)
+                        {
+                @if (y.ArticleId == x.Id)
+                            {
+                @if (y.Video)
+                                {
+                <br /><iframe width="361" height="205" src="@y.LinkString" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br />
+                                }
+                                else
+                                {
+                <Font face="@x.HeaderFont"><a class="@x.LinkType" href="@y.LinkString">@y.LinkString</a></Font><br />
+                                }
+                            }
+                        }
+
+                @foreach (var y in Model.apiClassList)
+                        {
+                            if (y.ArticleID == x.Id)
+                            {
+                @foreach (var z in y.ApiStringList)
+                                {
+                <div><Font face="@x.HeaderFont">@z</Font></div>
+                                }
+                <img src="@y.imgString" width="200" />
+                            }
+                        }
+            </div>
+            <br />
+            <div>
+                @if (Model.pdfList.Count > 0)
+                        {
+                <h6><Font face="@x.HeaderFont">Bifogade dokument</Font></h6>
+                @foreach (var y in Model.pdfList)
+                            {
+                @if (y.ArticleID == x.Id)
+                                {
+                <form method="post">
+                    <input asp-for="@Model.pdfID" value="@y.ID" hidden />
+                    <Font face="@x.HeaderFont">@y.Title</Font> <button asp-page-handler="DownloadDoc" type="submit"><Font face="@x.HeaderFont">Ladda ned dokument</Font></button>
+                </form>
+                                }
+                            }
+                        }
+
+            </div>
+            @if (Model.isSkribent || Model.isAdmin)
                     {
-                        <div class="container border btn-danger rounded-bottom">
-                            <a href="@x.Link"><img style="width:100%" src="@x.ImgLink" /></a>
-                            @x.Text
-                        </div>
+            <br />
+            <div>
+                <a href="?ArticleID=@x.Id"><Font face="@x.HeaderFont">Ändra artikel</Font></a>
+            </div>
+            <br />
                     }
-                </div>
+            <div><Font face="@x.HeaderFont">Artikel skapad/ senast ändrad @x.TimeStamp</Font></div>
+                }
             }
+
+            <!--Höger Kolumn-->
         </div>
-        <!--Footer-->
-        @if (Model.CurrentPage != null)
-        {
-            @if (Model.CurrentPage.Footer)
+        @if (Model.CurrentPage != null && Model.CurrentPage.Right)
             {
-                <div class="row" style="background-color: @Model.CurrentPage.ColorFooter; border-color: @Model.CurrentPage.BorderColorFooter; border-style: @Model.CurrentPage.BorderTypeFooter">
-                    <Font face="@Model.CurrentPage.FontFooter">@Model.CurrentPage.FooterString</Font>
-                </div>
+        <div style="background-color: @Model.CurrentPage.ColorRightbar; border-color: @Model.CurrentPage.BorderColorRightbar; border-style: @Model.CurrentPage.BorderTypeRightbar; border-width: thick;"
+             class="rightbar">
+            @foreach (var x in Model.OtherArticleList)
+                    {
+            <div class="container border btn-danger rounded-bottom">
+                <a href="@x.Link"><img style="width:100%" src="@x.ImgLink" /></a>
+                @x.Text
+            </div>
+                    }
+        </div>
+            }
+    </div>
+ <!--Footer-->
+    @if (Model.CurrentPage != null)
+        {
+    @if (Model.CurrentPage.Footer)
+            {
+    <div class="row" style="background-color: @Model.CurrentPage.ColorFooter; border-color: @Model.CurrentPage.BorderColorFooter; border-style: @Model.CurrentPage.BorderTypeFooter">
+        <Font face="@Model.CurrentPage.FontFooter">@Model.CurrentPage.FooterString</Font>
+    </div>
             }
         }
 
